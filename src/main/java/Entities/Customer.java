@@ -13,7 +13,8 @@ public class Customer {
 
 
     public Customer(){}
-    public Customer(int id, String name, String email, String password, int countyID, LocalDate DOB, LocalDateTime created, LocalDateTime lastUpdated) {
+
+    public Customer(int id, String name, String email, String password, int countyID, LocalDate DOB) {
         this.id = id;
         this.name = name;
         this.email = email;
