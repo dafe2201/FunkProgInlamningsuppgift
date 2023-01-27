@@ -1,6 +1,8 @@
 package Entities;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Model {
 
@@ -12,6 +14,8 @@ public class Model {
 
     private Category category;
 
+    private Set<Category> categoriesSet = new HashSet<>();
+
 
     public Model() {};
 
@@ -21,6 +25,10 @@ public class Model {
         this.price = price;
         this.brand = brand;
         this.category = category;
+    }
+
+    public Set<Category> getCategories() {
+        return categoriesSet;
     }
 
     public int getId() {

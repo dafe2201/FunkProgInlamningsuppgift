@@ -1,5 +1,6 @@
 package Repository;
 
+import DTO.ListDTO;
 import Entities.Brand;
 import Entities.Category;
 import Entities.Customer;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class Repository {
 
@@ -163,9 +166,29 @@ public final class Repository {
 
             }
 
+            //CHECK VI KAN NU FÅ REDA PÅ VILKA KATEGORIER SOM FINNS FÖR EN ENSKILD SKO (ALLA VET OM VAD FÖR KATEGORIER DE HAR)
+            allShoes.stream().peek(e1 ->  {
+                Consumer<Shoe> updateCategoryListSet = e2 -> {
+                    allShoes
+                            .forEach(myShoe1 -> {
+                                Consumer<Shoe> goingdeeper = myShoe2 -> {
+                                    if (myShoe2.getId() == e2.getId()) {
+                                        e2.getModel().getCategories().add(myShoe2.getModel().getCategory());
+                                    }
+                                };
+                                goingdeeper.accept(myShoe1);
+                            });
+                };
+                updateCategoryListSet.accept(e1);
+            }).toList();
+
+            System.out.println(allShoes);
+            //rensa dubletter
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return allShoes;
     }
 }
+
