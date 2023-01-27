@@ -71,6 +71,7 @@ public class Model {
                 ", price=" + price +
                 ", brand=" + brand +
                 ", category=" + category +
+                ", categoriesSet=" + categoriesSet +
                 '}';
     }
 }

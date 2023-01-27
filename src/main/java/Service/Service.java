@@ -1,5 +1,6 @@
 package Service;
 
+import DTO.ListDTO;
 import Entities.Customer;
 import Entities.Shoe;
 import Repository.Repository;
@@ -21,11 +22,13 @@ public class Service {
         return Repository.getInstance().logInHandler(userName, password);
     }
 
-    public List<Shoe> printShoes() throws IOException, SQLException {
-        return Repository.getInstance().getAllShoes();
+    public ListDTO getShoes() throws IOException, SQLException {
+       return Repository.getInstance().getShoes();
     }
 
+    public List<Shoe> getShoeInfo(String modellNamn) throws IOException, SQLException {
+        return Repository.getInstance().getShoeTransactionalData().stream().filter(shoe -> shoe.getModel().getName().equalsIgnoreCase(modellNamn)).toList();
 
-
+    }
 
 }

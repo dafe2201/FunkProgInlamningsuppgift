@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,7 +44,7 @@ public final class Repository {
                 p.getProperty("connectionString"),
                 p.getProperty("name"),
                 p.getProperty("password"));
-            PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer WHERE customer.name = ? and customer.password = ?")) {
+             PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer WHERE customer.name = ? and customer.password = ?")) {
 
             stmt.setString(1, userName);
             stmt.setString(2, password);
@@ -68,7 +69,50 @@ public final class Repository {
         }
     }
 
-    public List<Shoe> getAllShoes() throws SQLException {
+    public ListDTO getShoes() throws SQLException {
+        ListDTO listDTO = new ListDTO();
+        List<Brand> listOfBrands = new ArrayList<>();
+        List<Model> listOfModels = new ArrayList<>();
+
+
+        try (Connection con = DriverManager.getConnection(
+                p.getProperty("connectionString"),
+                p.getProperty("name"),
+                p.getProperty("password"));
+
+             PreparedStatement stmt = con.prepareStatement(
+                     "SELECT brand.name AS 'brand name',\n" +
+                             "model.name AS 'model name', model.price AS 'model price' FROM \n" +
+                             "brand\n" +
+                             "INNER JOIN model ON brand.id = model.id\n")) {
+            stmt.executeQuery();
+            ResultSet rs = stmt.getResultSet();
+
+            while (rs.next()) {
+                Brand tempBrand = new Brand();
+                Model tempModel = new Model();
+                tempBrand.setName(rs.getString("brand name"));
+                listOfBrands.add(tempBrand);
+                tempModel.setName(rs.getString("model name"));
+                tempModel.setBrand(tempBrand);
+                tempModel.setPrice(rs.getDouble("model price"));
+                listOfModels.add(tempModel);
+
+
+//                System.out.println(rs.getString("brand name"));
+//                System.out.println(rs.getString("model name"));
+//                System.out.println(rs.getString("model price"));
+            }
+           listDTO.setListOfBrands(listOfBrands);
+           listDTO.setListOfModels(listOfModels);
+
+        }
+
+        return listDTO;
+    }
+
+    //TODO skall användas för hålla ett objekt i javaminnet åt addToCart/Process.
+    public List<Shoe> getShoeTransactionalData() throws SQLException {
         List<Shoe> allShoes = new ArrayList<>();
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connectionString"),
@@ -87,8 +131,6 @@ public final class Repository {
                              "INNER JOIN stock ON stock.modelID = model.id")) {
             stmt.executeQuery();
             ResultSet rs = stmt.getResultSet();
-
-
 
 
             while (rs.next()) {
