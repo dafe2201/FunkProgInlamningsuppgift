@@ -106,8 +106,8 @@ public final class Repository {
 //                System.out.println(rs.getString("model name"));
 //                System.out.println(rs.getString("model price"));
             }
-           listDTO.setListOfBrands(listOfBrands);
-           listDTO.setListOfModels(listOfModels);
+            listDTO.setListOfBrands(listOfBrands);
+            listDTO.setListOfModels(listOfModels);
 
         }
 
