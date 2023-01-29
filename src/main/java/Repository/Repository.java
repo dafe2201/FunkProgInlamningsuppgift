@@ -10,12 +10,12 @@ import Entities.Shoe;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class Repository {
 
@@ -117,6 +117,8 @@ public final class Repository {
     //TODO skall användas för hålla ett objekt i javaminnet åt addToCart/Process.
     public List<Shoe> getShoeTransactionalData() throws SQLException {
         List<Shoe> allShoes = new ArrayList<>();
+        List<Shoe> shoeListWithoutDuplicates = new ArrayList<>();
+
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connectionString"),
                 p.getProperty("name"),
@@ -166,8 +168,9 @@ public final class Repository {
 
             }
 
-            //CHECK VI KAN NU FÅ REDA PÅ VILKA KATEGORIER SOM FINNS FÖR EN ENSKILD SKO (ALLA VET OM VAD FÖR KATEGORIER DE HAR)
-            allShoes.stream().peek(e1 ->  {
+
+            //Itererar över den befintliga listan för att populera kategorilistan med vilka kategorier som en sko förekommer i
+            allShoes.stream().peek(e1 -> {
                 Consumer<Shoe> updateCategoryListSet = e2 -> {
                     allShoes
                             .forEach(myShoe1 -> {
@@ -182,13 +185,14 @@ public final class Repository {
                 updateCategoryListSet.accept(e1);
             }).toList();
 
-            System.out.println(allShoes);
-            //rensa dubletter
+            //rensar ut duplicerade värden ur ursprungslistan och returnerar ut en städad lista
+            shoeListWithoutDuplicates = allShoes.stream().distinct().collect(Collectors.toList());
+
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return allShoes;
+        return shoeListWithoutDuplicates;
     }
 }
 

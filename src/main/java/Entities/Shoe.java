@@ -1,5 +1,7 @@
 package Entities;
 
+import java.util.Objects;
+
 public class Shoe {
 // SHOE REPRESENTERAR STOCK PÅ INDIVIDNIVÅ (en sko)
     private int id;
@@ -66,5 +68,17 @@ public class Shoe {
                 ", productSize=" + productSize +
                 ", amount=" + amount +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Shoe shoe)) return false;
+        return id == shoe.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

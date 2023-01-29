@@ -78,7 +78,6 @@ public class Controller {
             if (input.equals("0")){
                 browseShoesMenu();
             }
-
             //TODO: Kanske regex på namn
             List<Shoe> shoeList = service.getShoeInfo(input);
 
@@ -86,7 +85,7 @@ public class Controller {
                 System.out.println("Modell: " + input + " finns inte. Var vänlig försök igen...");
             } else {
                 System.out.println("Tillgängliga skor av " + input + ":\n");
-                shoeList.forEach(object -> System.out.println("Färg: " + object.getColor() + ", Storlek: " + object.getProductSize()));
+                shoeList.forEach(object -> System.out.println("Färg: " + object.getColor() + ", Storlek: " + object.getProductSize() + ", Saldo: " + object.getAmount()));
             }
         }
     }
