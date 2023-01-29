@@ -78,14 +78,16 @@ public class Controller {
             if (input.equals("0")){
                 browseShoesMenu();
             }
+
             //TODO: Kanske regex på namn
             List<Shoe> shoeList = service.getShoeInfo(input);
+            Repository.getInstance().removeDuplicates(shoeList);
 
             if (shoeList.size()==0){
                 System.out.println("Modell: " + input + " finns inte. Var vänlig försök igen...");
             } else {
                 System.out.println("Tillgängliga skor av " + input + ":\n");
-                shoeList.forEach(object -> System.out.println("Färg: " + object.getColor() + ", Storlek: " + object.getProductSize() + ", Saldo: " + object.getAmount()));
+                shoeList.forEach(object -> System.out.println("Färg: " + object.getColor() + ", Storlek: " + object.getProductSize()));
             }
         }
     }
@@ -113,7 +115,7 @@ public class Controller {
 
 
     private static void printModelInformation(ListDTO listDTO) {
-        listDTO.getListOfModels().forEach(object -> System.out.println("Modell: " + object.getName() + ", Märke: " + object.getBrand().getName() + ", Pris: " + object.getPrice()));
+        listDTO.getListOfModels().forEach(o -> System.out.println("Modell: " + o.getName() + ", Märke: " + o.getBrand().getName() + ", Pris: " + o.getPrice()));
     }
 
     public static void browseShoesMessage() {
