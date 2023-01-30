@@ -194,5 +194,86 @@ public final class Repository {
         }
         return shoeListWithoutDuplicates;
     }
+
+    public boolean validateStockStatus(String modelName, String color, int size) {
+        boolean productCantBeBought = true;
+        try (Connection con = DriverManager.getConnection(
+                p.getProperty("connectionString"),
+                p.getProperty("name"),
+                p.getProperty("password"));
+
+             PreparedStatement stmt = con.prepareStatement(
+                     "SELECT stock.amount FROM stock\n" +
+                             "INNER JOIN model ON stock.modelID = model.id\n" +
+                             "WHERE model.name = ? AND stock.color = ? AND stock.productSize = ?")) {
+            stmt.setString(1, modelName);
+            stmt.setString(2, color);
+            stmt.setDouble(3, size);
+            stmt.executeQuery();
+            ResultSet rs = stmt.getResultSet();
+
+            //TODO: Lägg till vad som händer om varan man skrivit in inte finns alls.
+            //TODO: - Om vi inte vill att man ska kunna lägga en beställning om stock är 0, så behöver vi inte göra något mer.
+            while (rs.next()) {
+                if (rs.getInt("amount") <= 0) {
+                    return productCantBeBought;
+                } else {
+                    productCantBeBought = false;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return productCantBeBought;
+    }
+
+
+    public boolean processPayment(List<Shoe> shoesInCart, Customer currentCustomer) throws SQLException {
+
+        boolean isSuccessfull = false;
+
+        try (Connection con = DriverManager.getConnection(
+                p.getProperty("connectionString"),
+                p.getProperty("name"),
+                p.getProperty("password"));) {
+            CallableStatement stmt = con.prepareCall("CALL addToCart(?, ?, ?)");
+
+            try {
+                stmt.setInt(1, currentCustomer.getId());
+                stmt.setNull(2, Types.INTEGER);
+                stmt.setInt(3, shoesInCart.get(0).getId());
+                stmt.execute();
+
+                isSuccessfull = true;
+
+                if (shoesInCart.size() > 1) {
+                    int lastid = 0;
+                    List<Integer> malakaLista = new ArrayList<>();
+                    PreparedStatement lastIdStatement = con.prepareStatement("SELECT customerorder.id AS last_id from customerOrder");
+                    ResultSet rs = lastIdStatement.executeQuery();
+
+                    while (rs.next()) {
+                        lastid = rs.getInt("last_id");
+                        malakaLista.add(lastid);
+                    }
+
+                    IntSummaryStatistics summary = malakaLista.stream().mapToInt(num -> num).summaryStatistics();
+                    lastid = summary.getMax();
+
+                    for (int i = 1; i < shoesInCart.size(); i++) {
+                        stmt.setInt(1, currentCustomer.getId());
+                        stmt.setInt(2, lastid);
+                        stmt.setInt(3, shoesInCart.get(i).getId());
+                        stmt.execute();
+                    }
+                }
+            } catch (IndexOutOfBoundsException ioobe) {
+                return isSuccessfull;
+            }
+
+        }
+        return isSuccessfull;
+    }
+
 }
 
