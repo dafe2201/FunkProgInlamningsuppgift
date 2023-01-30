@@ -37,7 +37,8 @@ public class Controller {
         boolean loggedIn = false;
         while (!loggedIn) {
             System.out.println("Vänligen uppge användarnamn & lösenord");
-            if (service.validateLogIn(scan.nextLine(), scan.nextLine()) == null) {
+            currentCustomer = service.validateLogIn(scan.nextLine(), scan.nextLine());
+            if (currentCustomer == null) {
                 failedLogInMessage();
             } else {
                 loggedIn = true;
@@ -79,6 +80,27 @@ public class Controller {
 
 
     //TODO nedanför är browseSizesMenu metoder
+    public static void findShoeMenu() throws SQLException, IOException {
+        while (true) {
+            browseSizesMessage();
+            String input = scan.nextLine();
+            if (input.equals("0")) {
+                productsMainMenu();
+            }
+            if (input.equals("1")) {
+                addToCartMenu();
+            }
+            List<Shoe> shoeList = service.getAllShoeInfo(input);
+
+            if (shoeList.size() == 0) {
+                System.out.println("Modell: " + input + " finns inte. Var vänlig försök igen...");
+            } else {
+                System.out.println("Tillgängliga skor av " + input + ":\n");
+                shoeList.forEach(object -> System.out.println("Färg: " + object.getColor() + ", Storlek: " + object.getProductSize() + ", Saldo: " + object.getAmount()));
+            }
+        }
+    }
+
     public static void browseSizesMessage() {
         System.out.println("""
                           
@@ -90,7 +112,7 @@ public class Controller {
                  """);
     }
 
-    //TODO nedanför är browseShoesMeny metoder
+    //TODO nedanför är productsMainMenu metoder
     private static void goBackToMainMenu() throws SQLException, IOException {
         mainMenu();
     }
@@ -120,6 +142,130 @@ public class Controller {
     }
 
     //TODO Nedanför är huvudmeny metoder
+
+    // TODO: Man måste gå in i kundvagnen för att kunna lägga beställning. Genom denna ska man även kunna ta bort produkter från kundvagnen.
+    private static void browseCartMenu() throws SQLException, IOException {
+        browseCartMessage();
+        AtomicInteger counter = new AtomicInteger(1);
+        Double sum = shoesInCart.stream().map(e -> e.getModel().getPrice()).reduce(0.0, (subTotal, element) -> subTotal + element);
+
+        System.out.println("KUNDVAGN \n");
+        shoesInCart.forEach(shoe -> {
+            System.out.println(counter + ": " + shoe.getModel().getName() + ", " + shoe.getColor() + ", " + shoe.getProductSize() + ", " + shoe.getModel().getPrice());
+            counter.getAndIncrement();
+        });
+        System.out.println("____________________________________________");
+        System.out.println("Totalt beställningsbelopp: " + sum);
+
+        String input = scan.nextLine();
+        if (input.equals("0")) { // Gå bak i meny
+            findShoeMenu();
+        }
+        if (input.equals("1")) { // Lägg beställning
+            processPayment(shoesInCart, currentCustomer);
+        }
+        if (input.equals("2")) {
+            removeFromCart();
+        }
+
+    }
+
+    private static void removeFromCart() {
+        System.out.println("Ange skonamn, färg och storlek för att välja produkt att radera ur kundvagnen");
+        String input = scan.nextLine();
+
+        String[] inputArray = input.split(", ");
+        String modelName = inputArray[0];
+        String color = inputArray[1];
+        String size = inputArray[2];
+
+        int index = 0;
+        for (int i = 0; i < shoesInCart.size(); i++) {
+            if (shoesInCart.get(i).getModel().getName().equalsIgnoreCase(modelName) && shoesInCart.get(i).getColor().equalsIgnoreCase(color) && shoesInCart.get(i).getProductSize() == Integer.parseInt(size)) {
+                index = i;
+            }
+        }
+        shoesInCart.remove(shoesInCart.get(index));
+        System.out.println("Tog bort skojävel");
+    }
+
+    private static void processPayment(List<Shoe> shoesInCart, Customer currentCustomer) throws IOException, SQLException {
+        List<Shoe> deniedShoes = service.validateStockStatus(shoesInCart);
+
+        if (deniedShoes.size() == 0) {
+            if (service.processPayment(shoesInCart, currentCustomer)) {
+                shoesInCart.clear();
+            }
+        } else {
+            deniedShoes.forEach(shoe -> {
+                System.out.println("Finns ej tillräckligt med skor i lager för att kunna köpa följande produkter: " + shoe.getModel().getName() + ", storlek: " + shoe.getProductSize() + ", saldo: " + shoe.getAmount());
+            });
+
+        }
+    }
+
+
+    private static void addToCartMenu() throws SQLException, IOException {
+        while (true) {
+
+            addToCartMessage();
+            String input = scan.nextLine();
+
+            if (input.equals("0")) {
+                findShoeMenu();
+            }
+
+            String[] inputArray = input.split(", ");
+            String modelName = inputArray[0];
+            String color = inputArray[1];
+            String size = inputArray[2];
+
+            Shoe currentShoe = validateIfShoeExists(modelName, color, size);
+            if (currentShoe != null) {
+                System.out.println("Skon tillagd i kundvagn");
+                shoesInCart.add(currentShoe);
+            }
+
+
+        }
+    }
+
+    private static Shoe validateIfShoeExists(String modelName, String color, String size) throws SQLException, IOException {
+        List<Shoe> shoeList = service.getAllShoeInfo(modelName);
+
+        try {
+            List<Shoe> tempList = shoeList.stream().filter(shoe -> shoe.getColor().equals(color) && shoe.getProductSize() == Integer.parseInt(size)).collect(Collectors.toList());
+            return tempList.get(0);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Skon finns inte. Försök igen.");
+        }
+        return null;
+    }
+
+    private static void browseCartMessage() {
+        //TODO: Implementera metod för att ta bort vara ur kundavagn.
+        System.out.println("""
+                          
+                =============================================================         
+                |         Tryck 0 för att gå tillbaka till föregående meny  |
+                |         Tryck 1 för att lägga beställning                 |
+                |         Tryck 2 för att ta bort vara ur kundvagn          |
+                =============================================================   
+                 """);
+    }
+
+    public static void addToCartMessage() {
+        System.out.println("""
+                             
+                -- Skriv in modellnamn, färg och storlek för den sko du vill ha --
+                             --          Ex: Supernova, white, 36         --
+                   =============================================================         
+                   |         Tryck 0 för att gå tillbaka till föregående meny  |
+                   =============================================================   
+                    """);
+    }
+
+
     public static void failedLogInMessage() {
         System.out.println("""
                 KUNDE EJ LOGGA IN.

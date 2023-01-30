@@ -7,6 +7,7 @@ import Repository.Repository;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
@@ -24,7 +25,6 @@ public class Service {
 
     public List<Shoe> getAllShoeInfo(String modellNamn) throws IOException, SQLException {
         return Repository.getInstance().getShoeTransactionalData().stream().filter(shoe -> shoe.getModel().getName().equalsIgnoreCase(modellNamn)).toList();
-
     }
 
     public List<Shoe> validateStockStatus(List<Shoe> shoeList) throws IOException {

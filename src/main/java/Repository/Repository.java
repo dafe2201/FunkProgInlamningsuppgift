@@ -1,11 +1,7 @@
 package Repository;
 
 import DTO.ListDTO;
-import Entities.Brand;
-import Entities.Category;
-import Entities.Customer;
-import Entities.Model;
-import Entities.Shoe;
+import Entities.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -101,10 +97,6 @@ public final class Repository {
                 tempModel.setPrice(rs.getDouble("model price"));
                 listOfModels.add(tempModel);
 
-
-//                System.out.println(rs.getString("brand name"));
-//                System.out.println(rs.getString("model name"));
-//                System.out.println(rs.getString("model price"));
             }
             listDTO.setListOfBrands(listOfBrands);
             listDTO.setListOfModels(listOfModels);
