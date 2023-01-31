@@ -204,7 +204,7 @@ public final class Repository {
                     Function<Integer, Optional<Shoe>> innerLoop = e2 -> { //här kommer index in till den inre loopen, används för att använda .get() på allShoes listan och få alla skoobjekt framför inkommande skon
                         if (allShoes.get(e2).getId() == incomingShoe.getId()) { //om objekten delar id (samma sko)
                             try {
-                                ObjectMapper mapper = new ObjectMapper();
+                                ObjectMapper mapper = new ObjectMapper(); //TODO: Överväg att ta bort och använda den som ligger uppnyad högst upp
                                 Shoe deepShoeCopy = mapper
                                         .readValue(mapper.writeValueAsString(incomingShoe), Shoe.class); //gör en deep copy på den inkommande skon--> https://www.baeldung.com/java-deep-copy
                                 deepShoeCopy.getModel().getCategories().add(allShoes.get(e2).getModel().getCategory()); //lägg till kategorin på den kopierade skon mot objektet som vi jämförde.
