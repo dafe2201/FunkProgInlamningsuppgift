@@ -240,16 +240,16 @@ public final class Repository {
 
                 if (shoesInCart.size() > 1) {
                     int lastid = 0;
-                    List<Integer> malakaLista = new ArrayList<>();
+                    List<Integer> idNumberList = new ArrayList<>();
                     PreparedStatement lastIdStatement = con.prepareStatement("SELECT customerorder.id AS last_id from customerOrder");
                     ResultSet rs = lastIdStatement.executeQuery();
 
                     while (rs.next()) {
                         lastid = rs.getInt("last_id");
-                        malakaLista.add(lastid);
+                        idNumberList.add(lastid);
                     }
 
-                    IntSummaryStatistics summary = malakaLista.stream().mapToInt(num -> num).summaryStatistics();
+                    IntSummaryStatistics summary = idNumberList.stream().mapToInt(num -> num).summaryStatistics();
                     lastid = summary.getMax();
 
                     for (int i = 1; i < shoesInCart.size(); i++) {

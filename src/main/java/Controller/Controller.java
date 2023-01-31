@@ -3,7 +3,6 @@ package Controller;
 import DTO.ListDTO;
 import Entities.Customer;
 import Entities.Shoe;
-import Repository.Repository;
 import Service.Service;
 
 import java.io.IOException;
@@ -18,6 +17,12 @@ import java.util.stream.Collectors;
  * Använder sig av en Repository Singleton.
  */
 
+//TODO: cart ersätter statisk variabel så det blir helt OOP (innehåller endast en lista med produkter)
+//TODO: Ta bort CustomerOrder (används ej)
+//TODO: STÄDA UTSKRIFTERNA
+//TODO: ADMINKLASS?
+//TODO: SKICKA TILL ANNAN MENY I KONSOLLAPPLIKATIONEN OM BOOL TRUE (ADMIN)
+
 
 public class Controller {
 
@@ -28,7 +33,6 @@ public class Controller {
     static Customer currentCustomer = new Customer();
 
     public static void main(String[] args) throws IOException, SQLException {
-        Repository repository = new Repository();
         service = new Service();
         logIn();
     }
@@ -49,33 +53,40 @@ public class Controller {
     }
 
     public static void mainMenu() throws SQLException, IOException {
-        boolean programOpen = true;
-        while (programOpen) {
-            mainMenuMessage();
-            int userChoice = Integer.parseInt(scan.nextLine());
-            switch (userChoice) {
-                case 0 -> System.exit(0);
-                case 1 -> productsMainMenu();
-                case 2 -> addToCartMenu();
-                case 3 -> browseCartMenu();
-                case 9 -> mainMenuMessage();
+        try {
+            while (true) {
+                mainMenuMessage();
+                int userChoice = Integer.parseInt(scan.nextLine());
+                switch (userChoice) {
+                    case 0 -> System.exit(0);
+                    case 1 -> productsMainMenu();
+                    case 2 -> addToCartMenu();
+                    case 3 -> browseCartMenu();
+                    case 9 -> mainMenuMessage();
+                }
             }
+        } catch (NumberFormatException nfe) {
+            System.out.println("Felaktig input, välj en siffra!");
         }
+
     }
 
     public static void productsMainMenu() throws SQLException, IOException {
         ListDTO tempListDTO = service.getShoesBrandModelPrice();
-        while (true) {
-            productsMainMenuMessage();
-            int userChoice = Integer.parseInt(scan.nextLine());
-            switch (userChoice) {
-                case 0 -> goBackToMainMenu();
-                case 1 -> printBrand(tempListDTO);
-                case 2 -> printModelInformation(tempListDTO);
-                case 3 -> findShoeMenu();
-                case 9 -> productsMainMenuMessage();
-
+        try {
+            while (true) {
+                productsMainMenuMessage();
+                int userChoice = Integer.parseInt(scan.nextLine());
+                switch (userChoice) {
+                    case 0 -> goBackToMainMenu();
+                    case 1 -> printBrand(tempListDTO);
+                    case 2 -> printModelInformation(tempListDTO);
+                    case 3 -> findShoeMenu();
+                    case 9 -> productsMainMenuMessage();
+                }
             }
+        } catch (NumberFormatException nfe) {
+            System.out.println("Felaktig input, välj en siffra!");
         }
     }
 
@@ -92,7 +103,6 @@ public class Controller {
                 addToCartMenu();
             }
             List<Shoe> shoeList = service.getAllShoeInfo(input);
-
             if (shoeList.size() == 0) {
                 System.out.println("Modell: " + input + " finns inte. Var vänlig försök igen...");
             } else {
