@@ -4,24 +4,26 @@ import java.time.LocalDate;
 
 public class Customer {
 
+
+
     protected int id;
     protected String name;
     protected String email;
     protected String password;
-    protected int countyID;
+    protected County county;
     protected int isAdmin;
     protected LocalDate DOB;
 
 
     public Customer(){}
 
-    public Customer(int id, String name, String email, String password, int countyID, int isAdmin, LocalDate DOB) {
+    public Customer(int id, String name, String email, String password, int isAdmin, County county, LocalDate DOB) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.countyID = countyID;
         this.isAdmin = isAdmin;
+        this.county = county;
         this.DOB = DOB;
     }
 
@@ -57,14 +59,6 @@ public class Customer {
         this.password = password;
     }
 
-    public int getCountyID() {
-        return countyID;
-    }
-
-    public void setCountyID(int countyID) {
-        this.countyID = countyID;
-    }
-
     public LocalDate getDOB() {
         return DOB;
     }
@@ -81,6 +75,14 @@ public class Customer {
         this.isAdmin = isAdmin;
     }
 
+    public County getCounty() {
+        return county;
+    }
+
+    public void setCounty(County county) {
+        this.county = county;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -88,8 +90,8 @@ public class Customer {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", countyID=" + countyID +
                 ", isAdmin=" + isAdmin +
+                ", county=" + county +
                 ", DOB=" + DOB +
                 '}';
     }
