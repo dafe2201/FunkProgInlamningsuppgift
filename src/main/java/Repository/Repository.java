@@ -60,6 +60,7 @@ public final class Repository {
                 currentCustomer.setEmail(rs.getString("email"));
                 currentCustomer.setPassword(rs.getString("password"));
                 currentCustomer.setCountyID(rs.getInt("countyID"));
+                currentCustomer.setIsAdmin(rs.getInt("isAdmin"));
                 currentCustomer.setDOB(rs.getDate("DOB").toLocalDate());
             }
             return currentCustomer;

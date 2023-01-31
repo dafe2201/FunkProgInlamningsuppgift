@@ -9,17 +9,19 @@ public class Customer {
     protected String email;
     protected String password;
     protected int countyID;
+    protected int isAdmin;
     protected LocalDate DOB;
 
 
     public Customer(){}
 
-    public Customer(int id, String name, String email, String password, int countyID, LocalDate DOB) {
+    public Customer(int id, String name, String email, String password, int countyID, int isAdmin, LocalDate DOB) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.countyID = countyID;
+        this.isAdmin = isAdmin;
         this.DOB = DOB;
     }
 
@@ -71,6 +73,14 @@ public class Customer {
         this.DOB = DOB;
     }
 
+    public int getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(int isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -79,6 +89,7 @@ public class Customer {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", countyID=" + countyID +
+                ", isAdmin=" + isAdmin +
                 ", DOB=" + DOB +
                 '}';
     }
