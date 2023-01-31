@@ -1,10 +1,11 @@
 package Entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Customer {
 
-
+   protected List<CustomerOrder> customerOrderList;
 
     protected int id;
     protected String name;
@@ -83,15 +84,24 @@ public class Customer {
         this.county = county;
     }
 
+    public List<CustomerOrder> getCustomerOrderList() {
+        return customerOrderList;
+    }
+
+    public void setCustomerOrderList(List<CustomerOrder> customerOrderList) {
+        this.customerOrderList = customerOrderList;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
-                "id=" + id +
+                "customerOrderList=" + customerOrderList +
+                ", id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", isAdmin=" + isAdmin +
                 ", county=" + county +
+                ", isAdmin=" + isAdmin +
                 ", DOB=" + DOB +
                 '}';
     }

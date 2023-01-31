@@ -1,49 +1,21 @@
 package Entities;
 
+import java.util.List;
+
 public class Cart {
-
-    private int id;
-    private int customerOrderID;
-    private int stockID;
-
-    public Cart(int id, int customerOrderID, int stockID) {
-        this.id = id;
-        this.customerOrderID = customerOrderID;
-        this.stockID = stockID;
-    }
+    protected List<Shoe> shoesInCart;
 
     public Cart(){}
-
-    public int getId() {
-        return id;
+    public Cart(List<Shoe> shoesInCart) {
+        this.shoesInCart = shoesInCart;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public List<Shoe> getShoesInCart() {
+        return shoesInCart;
     }
 
-    public int getCustomerOrderID() {
-        return customerOrderID;
+    public void setShoesInCart(List<Shoe> shoesInCart) {
+        this.shoesInCart = shoesInCart;
     }
 
-    public void setCustomerOrderID(int customerOrderID) {
-        this.customerOrderID = customerOrderID;
-    }
-
-    public int getStockID() {
-        return stockID;
-    }
-
-    public void setStockID(int stockID) {
-        this.stockID = stockID;
-    }
-
-    @Override
-    public String toString() {
-        return "Cart{" +
-                "id=" + id +
-                ", customerOrderID=" + customerOrderID +
-                ", stockID=" + stockID +
-                '}';
-    }
 }
