@@ -2,16 +2,17 @@ package Repository;
 
 import DTO.ListDTO;
 import Entities.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class Repository {
 
@@ -107,9 +108,10 @@ public final class Repository {
     }
 
     //TODO skall användas för hålla ett objekt i javaminnet åt addToCart/Process.
-    public List<Shoe> getShoeTransactionalData() throws SQLException {
+    public List<Shoe> getShoeTransactionalData() throws SQLException, JsonProcessingException {
         List<Shoe> allShoes = new ArrayList<>();
         List<Shoe> shoeListWithoutDuplicates = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
 
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connectionString"),
@@ -177,9 +179,47 @@ public final class Repository {
                 updateCategoryListSet.accept(e1);
             }).toList();
 
+
+            Shoe deepShoe = objectMapper
+                    .readValue(objectMapper.writeValueAsString(allShoes.get(0)), Shoe.class);
+            System.out.println("DEEP SHOE: " + deepShoe.getModel().getName());
+            System.out.println("OG SHOE (index 0): " + allShoes.get(0).getModel().getName());
+
+            BiFunction<Shoe, Integer, List<Shoe>> shoeModifierFunction = (incomingShoe, outerIndex) -> {
+
+                //IntStream loopar tar och jämför incomingShoe med alla andra efterkommande skor och returnerar ut en optional
+
+                List<Optional<Shoe>> listOfShoes = IntStream.range(outerIndex, allShoes.size() - 1).mapToObj(e -> { //tar index i den inre loopen och skickar vidare
+                    Function<Integer, Optional<Shoe>> innerLoop = e2 -> { //här kommer index in till den inre loopen, används för att använda .get() på allShoes listan och få alla skoobjekt framför inkommande skon
+                        if (allShoes.get(e2).getId() == incomingShoe.getId()) { //om objekten delar id (samma sko)
+                            try {
+                                ObjectMapper mapper = new ObjectMapper();
+                                Shoe deepShoeCopy = mapper
+                                        .readValue(mapper.writeValueAsString(incomingShoe), Shoe.class); //gör en deep copy på den inkommande skon--> https://www.baeldung.com/java-deep-copy
+                                deepShoeCopy.getModel().getCategories().add(allShoes.get(e2).getModel().getCategory()); //lägg till kategorin på den kopierade skon mot objektet som vi jämförde.
+                                return Optional.of(deepShoeCopy); //returnera en optional med den kopierade skon
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+                        return Optional.empty(); //returnerar om id var falskt, tom optional.
+                    };
+                    return innerLoop.apply(e); // vi returnerar ut en optional från funktionen "innerLoop".
+                }).toList(); //vi måste samla upp alla objekt nu
+              return listOfShoes.stream().filter(Optional::isPresent).map(Optional::get).distinct().collect(Collectors.toList());
+            };
+
+            List<List<Shoe>> modifiedShoeList = IntStream.range(0, allShoes.size()).mapToObj(e -> {
+                return shoeModifierFunction.apply(allShoes.get(e), e);
+            }).toList();
+            List<Shoe> finalShoeList = modifiedShoeList.stream().flatMap(Collection::stream).distinct().toList();
+
             //rensar ut duplicerade värden ur ursprungslistan och returnerar ut en städad lista
             shoeListWithoutDuplicates = allShoes.stream().distinct().collect(Collectors.toList());
 
+
+            System.out.println("final shoe list: "+finalShoeList.size() + ", get(0)" + finalShoeList.get(0));
+            System.out.println("shoe list without duplicate: "+shoeListWithoutDuplicates.size() + ", get(0)" + shoeListWithoutDuplicates.get(0));
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
