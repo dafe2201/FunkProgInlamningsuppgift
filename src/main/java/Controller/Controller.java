@@ -41,6 +41,7 @@ public class Controller {
             if (currentCustomer == null) {
                 failedLogInMessage();
             } else {
+            //TODO: else if currentCustomer isAdmin - adminMenu(); ?
                 loggedIn = true;
                 mainMenu();
             }
