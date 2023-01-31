@@ -110,7 +110,12 @@ public final class Repository {
     //TODO skall användas för hålla ett objekt i javaminnet åt addToCart/Process.
     public List<Shoe> getShoeTransactionalData() throws SQLException, JsonProcessingException {
         List<Shoe> allShoes = new ArrayList<>();
-        List<Shoe> shoeListWithoutDuplicates = new ArrayList<>();
+        //TODO: KAN TAS BORT NÄR VI HAR ETABLERAT ATT NYA METODEN ERSÄTTER DEN GAMLA:
+        //TODO: --
+        List<Shoe> shoeListWithoutDuplicates;
+        //TODO: --
+        List<Shoe> finalShoeList;
+        //används för att göra en deepcopy. Se Mavenprojekt för importerade libraries som tillåter oss att göra deepcopies enkelt
         ObjectMapper objectMapper = new ObjectMapper();
 
         try (Connection con = DriverManager.getConnection(
@@ -163,6 +168,8 @@ public final class Repository {
             }
 
 
+            //TODO: KAN TAS BORT NÄR VI HAR ETABLERAT ATT NYA METODEN ERSÄTTER DEN GAMLA:
+            //TODO: --
             //Itererar över den befintliga listan för att populera kategorilistan med vilka kategorier som en sko förekommer i
             allShoes.stream().peek(e1 -> {
                 Consumer<Shoe> updateCategoryListSet = e2 -> {
@@ -178,17 +185,21 @@ public final class Repository {
                 };
                 updateCategoryListSet.accept(e1);
             }).toList();
+            //TODO: --
 
 
+            //TODO: KAN TAS BORT NÄR GENOMGÅNG ÄR GENOMFÖRD:
+            //TODO: --
             Shoe deepShoe = objectMapper
                     .readValue(objectMapper.writeValueAsString(allShoes.get(0)), Shoe.class);
             System.out.println("DEEP SHOE: " + deepShoe.getModel().getName());
             System.out.println("OG SHOE (index 0): " + allShoes.get(0).getModel().getName());
+            //TODO: ANVÄNDS ENDAST I DEBUGGING-/TESTSYFTE
+            //TODO: --
 
+            //Nya funktionen som ersätter den gamla (om allt går bra) högre ordningens funktion 100%
             BiFunction<Shoe, Integer, List<Shoe>> shoeModifierFunction = (incomingShoe, outerIndex) -> {
-
                 //IntStream loopar tar och jämför incomingShoe med alla andra efterkommande skor och returnerar ut en optional
-
                 List<Optional<Shoe>> listOfShoes = IntStream.range(outerIndex, allShoes.size() - 1).mapToObj(e -> { //tar index i den inre loopen och skickar vidare
                     Function<Integer, Optional<Shoe>> innerLoop = e2 -> { //här kommer index in till den inre loopen, används för att använda .get() på allShoes listan och få alla skoobjekt framför inkommande skon
                         if (allShoes.get(e2).getId() == incomingShoe.getId()) { //om objekten delar id (samma sko)
@@ -209,22 +220,23 @@ public final class Repository {
               return listOfShoes.stream().filter(Optional::isPresent).map(Optional::get).distinct().collect(Collectors.toList());
             };
 
-            List<List<Shoe>> modifiedShoeList = IntStream.range(0, allShoes.size()).mapToObj(e -> {
-                return shoeModifierFunction.apply(allShoes.get(e), e);
-            }).toList();
-            List<Shoe> finalShoeList = modifiedShoeList.stream().flatMap(Collection::stream).distinct().toList();
+            List<List<Shoe>> modifiedShoeList = IntStream.range(0, allShoes.size()).mapToObj(e -> shoeModifierFunction.apply(allShoes.get(e), e)).toList();
+            finalShoeList = modifiedShoeList.stream().flatMap(Collection::stream).distinct().toList();
 
+            //TODO: KAN TAS BORT NÄR VI HAR ETABLERAT ATT NYA METODEN ERSÄTTER DEN GAMLA:
+            //TODO: --
             //rensar ut duplicerade värden ur ursprungslistan och returnerar ut en städad lista
             shoeListWithoutDuplicates = allShoes.stream().distinct().collect(Collectors.toList());
 
-
+            //TODO: KAN TAS BORT NÄR VI HAR ETABLERAT ATT NYA METODEN ERSÄTTER DEN GAMLA (DEBUGGING FÖR NYA METODEN VS GAMLA):
             System.out.println("final shoe list: "+finalShoeList.size() + ", get(0)" + finalShoeList.get(0));
             System.out.println("shoe list without duplicate: "+shoeListWithoutDuplicates.size() + ", get(0)" + shoeListWithoutDuplicates.get(0));
+            //TODO: --
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return shoeListWithoutDuplicates;
+        return finalShoeList;
     }
 
     public boolean validateStockStatus(String modelName, String color, int size) {
