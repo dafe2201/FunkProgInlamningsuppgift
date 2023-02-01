@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class Repository {
-
     private static Repository instance;
 
 
@@ -65,7 +64,7 @@ public final class Repository {
                 currentCustomer.setEmail(rs.getString("email"));
                 currentCustomer.setPassword(rs.getString("password"));
                 //TODO: TOG BORT SETCOUNTYID, BEHÖVER LÄGGA TILL COUNTY I CUSTOMER.
-                currentCustomer.setIsAdmin(rs.getInt("isAdmin"));
+                currentCustomer.setAdmin(rs.getBoolean("isAdmin"));
                 currentCustomer.setDOB(rs.getDate("DOB").toLocalDate());
 
             }
@@ -262,8 +261,6 @@ public final class Repository {
             stmt.executeQuery();
             ResultSet rs = stmt.getResultSet();
 
-            //TODO: Lägg till vad som händer om varan man skrivit in inte finns alls.
-            //TODO: - Om vi inte vill att man ska kunna lägga en beställning om stock är 0, så behöver vi inte göra något mer.
             while (rs.next()) {
                 if (rs.getInt("amount") <= 0) {
                     return productCantBeBought;
@@ -320,7 +317,6 @@ public final class Repository {
             } catch (IndexOutOfBoundsException ioobe) {
                 return isSuccessfull;
             }
-
         }
         return isSuccessfull;
     }

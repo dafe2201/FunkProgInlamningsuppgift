@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
-    public Service() throws IOException, SQLException  {
+    public Service() throws IOException, SQLException {
 
     }
 
@@ -20,7 +20,7 @@ public class Service {
     }
 
     public ListDTO getShoesBrandModelPrice() throws IOException, SQLException {
-       return Repository.getInstance().getShoes();
+        return Repository.getInstance().getShoes();
     }
 
     public List<Shoe> getAllShoeInfo(String modellNamn) throws IOException, SQLException {
@@ -30,7 +30,7 @@ public class Service {
     public List<Shoe> validateStockStatus(List<Shoe> shoeList) throws IOException {
 
         List<Shoe> shoesThatCannotBeBought = new ArrayList<>();
-        for (int i=0; i<shoeList.size(); i++) {
+        for (int i = 0; i < shoeList.size(); i++) {
             if (Repository.getInstance().validateStockStatus(shoeList.get(i).getModel().getName(), shoeList.get(i).getColor(), shoeList.get(i).getProductSize())) {
                 shoesThatCannotBeBought.add(shoeList.get(i));
             }
@@ -39,6 +39,6 @@ public class Service {
     }
 
     public boolean processPayment(List<Shoe> shoesInCart, Customer currentCustomer) throws IOException, SQLException {
-      return Repository.getInstance().processPayment(shoesInCart, currentCustomer);
+        return Repository.getInstance().processPayment(shoesInCart, currentCustomer);
     }
 }

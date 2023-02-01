@@ -2,11 +2,18 @@ package Entities;
 
 public class CustomerOrder {
 
+    protected int id;
     protected Cart cart;
 
     public CustomerOrder(){}
-    public CustomerOrder(Cart cart) {
+
+    public CustomerOrder(int id,Cart cart) {
+        this.id = id;
         this.cart = cart;
+    }
+
+    public CustomerOrder(int id){
+        this.id = id;
     }
 
     public Cart getCart() {
@@ -17,10 +24,19 @@ public class CustomerOrder {
         this.cart = cart;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "CustomerOrder{" +
-                "cart=" + cart +
+                "id=" + id +
+                ", cart=" + cart +
                 '}';
     }
 }

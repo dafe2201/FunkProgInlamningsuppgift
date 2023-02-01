@@ -11,20 +11,55 @@ public class Customer {
     protected String email;
     protected String password;
     protected County county;
-    protected int isAdmin;
+    protected boolean isAdmin;
     protected LocalDate DOB;
+    protected Set<CustomerOrder> customerOrderSet = new HashSet<>();
+    protected CustomerOrder customerOrder;
+
 
 
     public Customer(){}
 
-    public Customer(int id, String name, String email, String password, int isAdmin, County county, LocalDate DOB) {
+
+    public Customer(CustomerOrder customerOrder, int id, String name, String email, String password, County county, boolean isAdmin, LocalDate DOB) {
+        this.customerOrder = customerOrder;
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.isAdmin = isAdmin;
         this.county = county;
+        this.isAdmin = isAdmin;
         this.DOB = DOB;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return id == customer.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public Set<CustomerOrder> getCustomerOrderSet() {
+        return customerOrderSet;
+    }
+
+    public void setCustomerOrderSet(Set<CustomerOrder> customerOrderSet) {
+        this.customerOrderSet = customerOrderSet;
+    }
+
+    public CustomerOrder getCustomerOrder() {
+        return customerOrder;
+    }
+
+    public void setCustomerOrder(CustomerOrder customerOrder) {
+        this.customerOrder = customerOrder;
     }
 
     public int getId() {
@@ -59,22 +94,6 @@ public class Customer {
         this.password = password;
     }
 
-    public LocalDate getDOB() {
-        return DOB;
-    }
-
-    public void setDOB(LocalDate DOB) {
-        this.DOB = DOB;
-    }
-
-    public int getIsAdmin() {
-        return isAdmin;
-    }
-
-    public void setIsAdmin(int isAdmin) {
-        this.isAdmin = isAdmin;
-    }
-
     public County getCounty() {
         return county;
     }
@@ -83,25 +102,34 @@ public class Customer {
         this.county = county;
     }
 
-    public List<CustomerOrder> getCustomerOrderList() {
-        return customerOrderList;
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
-    public void setCustomerOrderList(List<CustomerOrder> customerOrderList) {
-        this.customerOrderList = customerOrderList;
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
+    public LocalDate getDOB() {
+        return DOB;
+    }
+
+    public void setDOB(LocalDate DOB) {
+        this.DOB = DOB;
     }
 
     @Override
     public String toString() {
         return "Customer{" +
-                "customerOrderList=" + customerOrderList +
-                ", id=" + id +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", county=" + county +
                 ", isAdmin=" + isAdmin +
                 ", DOB=" + DOB +
+                ", customerOrderSet=" + customerOrderSet +
+                ", customerOrder=" + customerOrder +
                 '}';
     }
 }

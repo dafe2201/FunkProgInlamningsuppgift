@@ -13,9 +13,9 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-/**
- * Använder sig av en Repository Singleton.
- */
+
+ // Använder sig av en Repository Singleton.
+
 
 //TODO: cart ersätter statisk variabel så det blir helt OOP (innehåller endast en lista med produkter)
 //TODO: Ta bort CustomerOrder (används ej)
@@ -45,11 +45,11 @@ public class Controller {
             if (currentCustomer == null) {
                 failedLogInMessage();
             }
-            else if(currentCustomer.getIsAdmin() > 0){
+            else if(currentCustomer.isAdmin()){
                 loggedIn = true;
-                adminMenu();
+                AdminController ac = new AdminController();
+                ac.adminMenu();
             }
-
             else {
             //TODO: else if currentCustomer isAdmin - adminMenu(); ?
                 loggedIn = true;
@@ -58,42 +58,6 @@ public class Controller {
         }
     }
 
-    private static void adminMenu() throws SQLException, IOException {
-        boolean programOpen = true;
-        while(programOpen) {
-            adminMenuMessage();
-
-            int userChoice = Integer.parseInt(scan.nextLine());
-            switch (userChoice) {
-                // Alla cases överensstämmer med vilket nummer rapporten har i kriterierna. Se "Inlämningsuppgift 2023.pdf"
-                case 1 -> searchOrderHistoryByProduct();
-                case 2 -> searchOrderHistoryByCustomer();
-                case 3 -> getTotalRevenue();
-                case 4 -> getRevenueByCounty();
-                case 5 -> getTopSellingProducts();
-
-                case 9 -> customerMainMenu();
-                case 0 -> System.exit(0);
-
-            }
-
-        }
-    }
-
-    private static void getTopSellingProducts() {
-    }
-
-    private static void getRevenueByCounty() {
-    }
-
-    private static void getTotalRevenue() {
-    }
-
-    private static void searchOrderHistoryByCustomer() {
-    }
-
-    private static void searchOrderHistoryByProduct() {
-    }
 
     public static void customerMainMenu() throws SQLException, IOException {
         try {
@@ -266,7 +230,7 @@ public class Controller {
             String input = scan.nextLine();
 
             if (input.equals("0")) {
-                findShoeMenu();
+                customerMainMenu();
             }
 
             String[] inputArray = input.split(", ");
@@ -279,7 +243,6 @@ public class Controller {
                 System.out.println("Skon tillagd i kundvagn");
                 shoesInCart.add(currentShoe);
             }
-
 
         }
     }
