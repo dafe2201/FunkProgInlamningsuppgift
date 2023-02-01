@@ -44,12 +44,55 @@ public class Controller {
             currentCustomer = service.validateLogIn(scan.nextLine(), scan.nextLine());
             if (currentCustomer == null) {
                 failedLogInMessage();
-            } else {
+            }
+            else if(currentCustomer.getIsAdmin() > 0){
+                loggedIn = true;
+                adminMenu();
+            }
+
+            else {
             //TODO: else if currentCustomer isAdmin - adminMenu(); ?
                 loggedIn = true;
                 mainMenu();
             }
         }
+    }
+
+    private static void adminMenu() throws SQLException, IOException {
+        boolean programOpen = true;
+        while(programOpen) {
+            adminMenuMessage();
+
+            int userChoice = Integer.parseInt(scan.nextLine());
+            switch (userChoice) {
+                // Alla cases överensstämmer med vilket nummer rapporten har i kriterierna. Se "Inlämningsuppgift 2023.pdf"
+                case 1 -> searchOrderHistoryByProduct();
+                case 2 -> searchOrderHistoryByCustomer();
+                case 3 -> getTotalRevenue();
+                case 4 -> getRevenueByCounty();
+                case 5 -> getTopSellingProducts();
+
+                case 9 -> mainMenu();
+                case 0 -> System.exit(0);
+
+            }
+
+        }
+    }
+
+    private static void getTopSellingProducts() {
+    }
+
+    private static void getRevenueByCounty() {
+    }
+
+    private static void getTotalRevenue() {
+    }
+
+    private static void searchOrderHistoryByCustomer() {
+    }
+
+    private static void searchOrderHistoryByProduct() {
     }
 
     public static void mainMenu() throws SQLException, IOException {
@@ -301,6 +344,21 @@ public class Controller {
                  """);
     }
 
+    public static void adminMenuMessage() {
+        System.out.println("""
+                                       ADMIN - HUVUDMENY
+                =============================================================         
+                |         Tryck 0 för att avsluta program                   |
+                |         Tryck 1 för att gå till kundhuvudmeny             |
+                |         Tryck 2 för att ...                               |
+                |         Tryck 3 för att ...                               |
+                |         Tryck 4 för att ...                               |  
+                |         Tryck 5 för att ...                               |  
+                |         Tryck 6 för att ...                               |  
+                |         Tryck 9 för att ...                               |
+                =============================================================   
+                 """);
+    }
 
 }
 

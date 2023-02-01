@@ -1,25 +1,30 @@
 package Entities;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Customer {
+
+   protected List<CustomerOrder> customerOrderList;
 
     protected int id;
     protected String name;
     protected String email;
     protected String password;
-    protected int countyID;
+    protected County county;
+    protected int isAdmin;
     protected LocalDate DOB;
 
 
     public Customer(){}
 
-    public Customer(int id, String name, String email, String password, int countyID, LocalDate DOB) {
+    public Customer(int id, String name, String email, String password, int isAdmin, County county, LocalDate DOB) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.countyID = countyID;
+        this.isAdmin = isAdmin;
+        this.county = county;
         this.DOB = DOB;
     }
 
@@ -55,14 +60,6 @@ public class Customer {
         this.password = password;
     }
 
-    public int getCountyID() {
-        return countyID;
-    }
-
-    public void setCountyID(int countyID) {
-        this.countyID = countyID;
-    }
-
     public LocalDate getDOB() {
         return DOB;
     }
@@ -71,14 +68,40 @@ public class Customer {
         this.DOB = DOB;
     }
 
+    public int getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(int isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public County getCounty() {
+        return county;
+    }
+
+    public void setCounty(County county) {
+        this.county = county;
+    }
+
+    public List<CustomerOrder> getCustomerOrderList() {
+        return customerOrderList;
+    }
+
+    public void setCustomerOrderList(List<CustomerOrder> customerOrderList) {
+        this.customerOrderList = customerOrderList;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
-                "id=" + id +
+                "customerOrderList=" + customerOrderList +
+                ", id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", countyID=" + countyID +
+                ", county=" + county +
+                ", isAdmin=" + isAdmin +
                 ", DOB=" + DOB +
                 '}';
     }

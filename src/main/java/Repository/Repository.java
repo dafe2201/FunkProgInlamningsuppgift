@@ -24,6 +24,7 @@ public final class Repository {
 
     Properties p = new Properties();
 
+    //TODO: Denna kan vi ta bort.
     List<Customer> customerList = new ArrayList<>();
 
     public Repository() throws IOException {
@@ -43,6 +44,8 @@ public final class Repository {
                 p.getProperty("connectionString"),
                 p.getProperty("name"),
                 p.getProperty("password"));
+             //TODO: ÄNDRA QUERYN SÅ ATT COUNTY TAS MED.
+             //TODO: BEHÖVER VI GÖRA DETTA HÄR, ELLER RÄCKER DET MED ATT VI SKAPAR UPP EN NY METOD FÖR ATT BARA TANKA NER ALL RELEVANT DATA FÖR RAPPORTERNA NÄR ADMIN LOGGAR IN?!
              PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer WHERE customer.name = ? and customer.password = ?")) {
 
             stmt.setString(1, userName);
@@ -52,6 +55,7 @@ public final class Repository {
             ResultSet rs = stmt.getResultSet();
 
             Customer currentCustomer = null;
+            County tempCounty = new County();
 
             while (rs.next()) {
                 currentCustomer = new Customer();
@@ -59,8 +63,10 @@ public final class Repository {
                 currentCustomer.setName(rs.getString("name"));
                 currentCustomer.setEmail(rs.getString("email"));
                 currentCustomer.setPassword(rs.getString("password"));
-                currentCustomer.setCountyID(rs.getInt("countyID"));
+                //TODO: TOG BORT SETCOUNTYID, BEHÖVER LÄGGA TILL COUNTY I CUSTOMER.
+                currentCustomer.setIsAdmin(rs.getInt("isAdmin"));
                 currentCustomer.setDOB(rs.getDate("DOB").toLocalDate());
+
             }
             return currentCustomer;
         } catch (SQLException e) {
