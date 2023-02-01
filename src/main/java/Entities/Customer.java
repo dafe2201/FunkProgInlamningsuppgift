@@ -6,7 +6,6 @@ import java.util.List;
 public class Customer {
 
    protected List<CustomerOrder> customerOrderList;
-
     protected int id;
     protected String name;
     protected String email;

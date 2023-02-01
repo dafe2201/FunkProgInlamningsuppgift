@@ -53,7 +53,7 @@ public class Controller {
             else {
             //TODO: else if currentCustomer isAdmin - adminMenu(); ?
                 loggedIn = true;
-                mainMenu();
+                customerMainMenu();
             }
         }
     }
@@ -72,7 +72,7 @@ public class Controller {
                 case 4 -> getRevenueByCounty();
                 case 5 -> getTopSellingProducts();
 
-                case 9 -> mainMenu();
+                case 9 -> customerMainMenu();
                 case 0 -> System.exit(0);
 
             }
@@ -95,7 +95,7 @@ public class Controller {
     private static void searchOrderHistoryByProduct() {
     }
 
-    public static void mainMenu() throws SQLException, IOException {
+    public static void customerMainMenu() throws SQLException, IOException {
         try {
             while (true) {
                 mainMenuMessage();
@@ -168,7 +168,7 @@ public class Controller {
 
     //TODO nedanför är productsMainMenu metoder
     private static void goBackToMainMenu() throws SQLException, IOException {
-        mainMenu();
+        customerMainMenu();
     }
 
     private static void printBrand(ListDTO listDTO) {
