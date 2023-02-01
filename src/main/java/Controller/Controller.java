@@ -17,18 +17,13 @@ import java.util.stream.Collectors;
  // Använder sig av en Repository Singleton.
 
 
-//TODO: cart ersätter statisk variabel så det blir helt OOP (innehåller endast en lista med produkter)
-//TODO: Ta bort CustomerOrder (används ej)
 //TODO: STÄDA UTSKRIFTERNA
-//TODO: ADMINKLASS?
-//TODO: SKICKA TILL ANNAN MENY I KONSOLLAPPLIKATIONEN OM BOOL TRUE (ADMIN)
-
+//TODO: Skriv till bekräftelse på att ett köp har genomförts
 
 public class Controller {
 
     private static final Scanner scan = new Scanner(System.in);
-    private static Service service;
-    //TODO: LISTAN SKALL RENSAS EFTER PROCESSORDER HAR ANROPATS
+    static Service service;
     static List<Shoe> shoesInCart = new ArrayList<>();
     static Customer currentCustomer = new Customer();
 
@@ -51,7 +46,6 @@ public class Controller {
                 ac.adminMenu();
             }
             else {
-            //TODO: else if currentCustomer isAdmin - adminMenu(); ?
                 loggedIn = true;
                 customerMainMenu();
             }
@@ -101,7 +95,7 @@ public class Controller {
     //TODO nedanför är browseSizesMenu metoder
     public static void findShoeMenu() throws SQLException, IOException {
         while (true) {
-            browseSizesMessage();
+            findShoeMenuMessage();
             String input = scan.nextLine();
             if (input.equals("0")) {
                 productsMainMenu();
@@ -119,7 +113,7 @@ public class Controller {
         }
     }
 
-    public static void browseSizesMessage() {
+    public static void findShoeMenuMessage() {
         System.out.println("""
                           
                 -- Skriv in ett modellnamn för att se färger och storlekar --
@@ -160,8 +154,6 @@ public class Controller {
     }
 
     //TODO Nedanför är huvudmeny metoder
-
-    // TODO: Man måste gå in i kundvagnen för att kunna lägga beställning. Genom denna ska man även kunna ta bort produkter från kundvagnen.
     private static void browseCartMenu() throws SQLException, IOException {
         browseCartMessage();
         AtomicInteger counter = new AtomicInteger(1);
@@ -260,9 +252,7 @@ public class Controller {
     }
 
     private static void browseCartMessage() {
-        //TODO: Implementera metod för att ta bort vara ur kundavagn.
-        System.out.println("""
-                          
+        System.out.println("""               
                 =============================================================         
                 |         Tryck 0 för att gå tillbaka till föregående meny  |
                 |         Tryck 1 för att lägga beställning                 |
@@ -303,22 +293,6 @@ public class Controller {
                 |         Tryck 5 för att ...                               |  
                 |         Tryck 6 för att ...                               |  
                 |         Tryck 9 för att visa det här meddelandet igen     |
-                =============================================================   
-                 """);
-    }
-
-    public static void adminMenuMessage() {
-        System.out.println("""
-                                       ADMIN - HUVUDMENY
-                =============================================================         
-                |         Tryck 0 för att avsluta program                   |
-                |         Tryck 1 för att gå till kundhuvudmeny             |
-                |         Tryck 2 för att ...                               |
-                |         Tryck 3 för att ...                               |
-                |         Tryck 4 för att ...                               |  
-                |         Tryck 5 för att ...                               |  
-                |         Tryck 6 för att ...                               |  
-                |         Tryck 9 för att ...                               |
                 =============================================================   
                  """);
     }

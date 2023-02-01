@@ -1,11 +1,12 @@
 package Entities;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class Customer {
 
-   protected List<CustomerOrder> customerOrderList;
     protected int id;
     protected String name;
     protected String email;
@@ -118,7 +119,7 @@ public class Customer {
         this.DOB = DOB;
     }
 
-    @Override
+@Override
     public String toString() {
         return "Customer{" +
                 "id=" + id +

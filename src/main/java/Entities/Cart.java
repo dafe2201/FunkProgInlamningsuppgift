@@ -10,8 +10,10 @@ public class Cart {
 
 
     public Cart(){}
-    public Cart(List<Shoe> shoesInCart) {
-        this.shoesInCart = shoesInCart;
+
+    public Cart(int id, Shoe shoe) {
+        this.id = id;
+        this.shoe = shoe;
     }
 
     public Shoe getShoe() {
