@@ -9,23 +9,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public final class Repository {
-    private static Repository instance;
+public final class CustomerRepository {
+    private static CustomerRepository instance;
 
     Properties p = new Properties();
 
-    public Repository() throws IOException {
+    public CustomerRepository() throws IOException {
         p.load(new FileInputStream("src/main/java/resources/Settings.properties"));
     }
 
-    public static Repository getInstance() throws IOException {
+    public static CustomerRepository getInstance() throws IOException {
         if (instance == null) {
-            instance = new Repository();
+            instance = new CustomerRepository();
         }
         return instance;
     }
@@ -36,8 +35,6 @@ public final class Repository {
                 p.getProperty("connectionString"),
                 p.getProperty("name"),
                 p.getProperty("password"));
-             //TODO: ÄNDRA QUERYN SÅ ATT COUNTY TAS MED.
-             //TODO: BEHÖVER VI GÖRA DETTA HÄR, ELLER RÄCKER DET MED ATT VI SKAPAR UPP EN NY METOD FÖR ATT BARA TANKA NER ALL RELEVANT DATA FÖR RAPPORTERNA NÄR ADMIN LOGGAR IN?!
              PreparedStatement stmt = con.prepareStatement("SELECT * FROM customer WHERE customer.name = ? and customer.password = ?")) {
 
             stmt.setString(1, userName);
@@ -47,7 +44,6 @@ public final class Repository {
             ResultSet rs = stmt.getResultSet();
 
             Customer currentCustomer = null;
-            County tempCounty = new County();
 
             while (rs.next()) {
                 currentCustomer = new Customer();
@@ -55,7 +51,6 @@ public final class Repository {
                 currentCustomer.setName(rs.getString("name"));
                 currentCustomer.setEmail(rs.getString("email"));
                 currentCustomer.setPassword(rs.getString("password"));
-                //TODO: TOG BORT SETCOUNTYID, BEHÖVER LÄGGA TILL COUNTY I CUSTOMER.
                 currentCustomer.setAdmin(rs.getBoolean("isAdmin"));
                 currentCustomer.setDOB(rs.getDate("DOB").toLocalDate());
 
@@ -98,16 +93,14 @@ public final class Repository {
             }
             listDTO.setListOfBrands(listOfBrands);
             listDTO.setListOfModels(listOfModels);
-
         }
-
         return listDTO;
     }
 
     public List<Shoe> getShoeTransactionalData() throws SQLException, JsonProcessingException {
         List<Shoe> allShoes = new ArrayList<>();
         List<Shoe> finalShoeList;
-        //används för att göra en deepcopy. Se Mavenprojekt för importerade libraries som tillåter oss att göra deepcopies enkelt
+        //Används för att göra en deep copy. Se Maven projekt för importerade libraries som tillåter oss att göra deep copies enkelt
         ObjectMapper mapper = new ObjectMapper();
 
         try (Connection con = DriverManager.getConnection(
@@ -159,7 +152,7 @@ public final class Repository {
 
             }
 
-            //Nya funktionen som ersätter den gamla (om allt går bra) högre ordningens funktion 100%
+            //Egensnickrad funktion
             BiFunction<Shoe, Integer, List<Shoe>> shoeModifierFunction = (incomingShoe, outerIndex) -> {
                 //IntStream loopar tar och jämför incomingShoe med alla andra efterkommande skor och returnerar ut en optional
                 List<Optional<Shoe>> listOfShoes = IntStream.range(outerIndex, allShoes.size()).mapToObj(e -> { //tar index i den inre loopen och skickar vidare
@@ -181,6 +174,7 @@ public final class Repository {
               return listOfShoes.stream().filter(Optional::isPresent).map(Optional::get).distinct().collect(Collectors.toList());
             };
 
+            //Högre ordningens funktion (VG)
             List<List<Shoe>> modifiedShoeList = IntStream.range(0, allShoes.size()).mapToObj(e -> shoeModifierFunction.apply(allShoes.get(e), e)).toList();
             finalShoeList = modifiedShoeList.stream().flatMap(Collection::stream).distinct().toList();
 
@@ -223,12 +217,12 @@ public final class Repository {
 
     public boolean processPayment(List<Shoe> shoesInCart, Customer currentCustomer) throws SQLException {
 
-        boolean isSuccessfull = false;
+        boolean isSuccessful = false;
 
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connectionString"),
                 p.getProperty("name"),
-                p.getProperty("password"));) {
+                p.getProperty("password"))) {
             CallableStatement stmt = con.prepareCall("CALL addToCart(?, ?, ?)");
 
             try {
@@ -237,34 +231,34 @@ public final class Repository {
                 stmt.setInt(3, shoesInCart.get(0).getId());
                 stmt.execute();
 
-                isSuccessfull = true;
+                isSuccessful = true;
 
                 if (shoesInCart.size() > 1) {
-                    int lastid = 0;
+                    int lastId;
                     List<Integer> idNumberList = new ArrayList<>();
                     PreparedStatement lastIdStatement = con.prepareStatement("SELECT customerorder.id AS last_id from customerOrder");
                     ResultSet rs = lastIdStatement.executeQuery();
 
                     while (rs.next()) {
-                        lastid = rs.getInt("last_id");
-                        idNumberList.add(lastid);
+                        lastId = rs.getInt("last_id");
+                        idNumberList.add(lastId);
                     }
 
                     IntSummaryStatistics summary = idNumberList.stream().mapToInt(num -> num).summaryStatistics();
-                    lastid = summary.getMax();
+                    lastId = summary.getMax();
 
                     for (int i = 1; i < shoesInCart.size(); i++) {
                         stmt.setInt(1, currentCustomer.getId());
-                        stmt.setInt(2, lastid);
+                        stmt.setInt(2, lastId);
                         stmt.setInt(3, shoesInCart.get(i).getId());
                         stmt.execute();
                     }
                 }
             } catch (IndexOutOfBoundsException ioobe) {
-                return isSuccessfull;
+                return isSuccessful;
             }
         }
-        return isSuccessfull;
+        return isSuccessful;
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class AdminRepository {
+
     private static AdminRepository instance;
     Properties p = new Properties();
 
@@ -30,10 +31,6 @@ public final class AdminRepository {
     public List<Customer> getCustomerAndTransactionalData() {
 
         List<Customer> customerList = new ArrayList<>();
-        List<List<Customer>> finalCustomerList = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectMapper customerOrderMapper = new ObjectMapper();
-
 
         try (Connection con = DriverManager.getConnection(
                 p.getProperty("connectionString"),
@@ -101,7 +98,6 @@ public final class AdminRepository {
                 tempCustomer.setId(rs.getInt("CustomerID"));
                 tempCustomer.setName(rs.getString("CustomerName"));
                 tempCustomer.setEmail(rs.getString("CustomerEmail"));
-//                tempCustomer.setDOB(rs.getDate("CustomerDOB").toLocalDate());
                 tempCustomer.setCounty(tempCounty);
                 //vi populerar EJ isAdmin eller Password. Avsiktligt ignorerat.
                 tempCustomer.setCustomerOrder(tempCustomerOrder);
@@ -109,38 +105,6 @@ public final class AdminRepository {
                 //adderar till listan
                 customerList.add(tempCustomer);
             }
-
-
-
-//            //Nya funktionen som ersätter den gamla (om allt går bra) högre ordningens funktion 100%
-//            BiFunction<Customer, Integer, List<Customer>> customerModifierFunction = (incomingCustomer, outerIndex) -> {
-//
-//                //IntStream loopar tar och jämför incomingCustomer med alla andra efterkommande customers och returnerar ut en optional
-//                List<Optional<Customer>> listOfCustomers = IntStream.range(outerIndex, customerList.size()).mapToObj(e -> { //tar index i den inre loopen och skickar vidare
-//                    Function<Integer, Optional<Customer>> innerLoop = e2 -> { //här kommer index in till den inre loopen, används för att använda .get() på customerList listan och få alla customerobjekt framför inkommande customer
-//                        if (customerList.get(e2).getId() == incomingCustomer.getId()) { //om objekten delar id (samma customer)
-//                            try {
-//                                Customer deepCustomerCopy = mapper
-//                                        .readValue(mapper.writeValueAsString(incomingCustomer), Customer.class); //gör en deep copy på den inkommande skon--> https://www.baeldung.com/java-deep-copy
-//
-//                                CustomerOrder deepCustomerOrder = customerOrderMapper
-//                                        .readValue(customerOrderMapper.writeValueAsString(customerList.get(e2).getCustomerOrder()), CustomerOrder.class);
-//
-//                                deepCustomerCopy.getCustomerOrderSet().add(deepCustomerOrder); //lägg till kategorin på den kopierade skon mot objektet som vi jämförde.
-//                                return Optional.of(deepCustomerCopy); //returnera en optional med den kopierade skon
-//                            } catch (Exception exception) {
-//                                exception.printStackTrace();
-//                            }
-//                        }
-//                        return Optional.empty(); //returnerar om id var falskt, tom optional.
-//                    };
-//                    return innerLoop.apply(e); // vi returnerar ut en optional från funktionen "innerLoop".
-//                }).toList(); //vi måste samla upp alla objekt nu
-//                return listOfCustomers.stream().filter(Optional::isPresent).map(Optional::get).distinct().collect(Collectors.toList());
-//            };
-//
-//            finalCustomerList = IntStream.range(0, customerList.size()).mapToObj(e -> customerModifierFunction.apply(customerList.get(e), e)).toList();
-
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

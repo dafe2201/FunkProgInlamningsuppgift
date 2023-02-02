@@ -17,7 +17,7 @@ public class Model {
     private Set<Category> categoriesSet = new HashSet<>();
 
 
-    public Model() {};
+    public Model() {}
 
     public Model(int id, String name, double price, Brand brand, Category category) {
         this.id = id;
