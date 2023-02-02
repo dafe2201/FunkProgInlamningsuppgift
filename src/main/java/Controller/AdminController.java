@@ -39,14 +39,13 @@ public class AdminController {
     }
 
     private void searchOrderHistoryByProduct() throws IOException, SQLException {
-//        Service.adminGetAllCustomersFromDB();
         while (true) {
             searchOrderHistoryByProductMessage();
             try {
                 int userChoice = Integer.parseInt(scan.nextLine());
                 switch (userChoice) {
                     case 0 -> adminMenu();
-                    // Alla cases överensstämmer med vilket nummer rapporten har i kriterierna. Se "Inlämningsuppgift 2023.pdf"
+
                     case 1 ->  {
                         System.out.println("Ange en färg (engelska)");
                         service.listCustomersByShoeColor(scan.nextLine());

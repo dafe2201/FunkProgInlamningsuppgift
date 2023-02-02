@@ -9,12 +9,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
- // Använder sig av en Repository Singleton.
+// Använder sig av en Repository Singleton.
 
 public class CustomerController {
 
@@ -130,14 +132,22 @@ public class CustomerController {
     //TODO Nedanför är huvudmeny metoder
     private static void browseCartMenu() throws SQLException, IOException {
         browseCartMessage();
-        AtomicInteger counter = new AtomicInteger(1);
+//        AtomicInteger counter = new AtomicInteger(1);
         Double sum = shoesInCart.stream().map(e -> e.getModel().getPrice()).reduce(0.0, (subTotal, element) -> subTotal + element);
 
         System.out.println("KUNDVAGN \n");
-        shoesInCart.forEach(shoe -> {
-            System.out.println(counter + ": " + shoe.getModel().getName() + ", " + shoe.getColor() + ", " + shoe.getProductSize() + ", " + shoe.getModel().getPrice());
-            counter.getAndIncrement();
-        });
+
+        List<String> myListOfOutput = IntStream.range(0,shoesInCart.size()).mapToObj(counter -> {
+            String myString = (counter+1) +": "+shoesInCart.get(counter).getModel().getName() + ", " + shoesInCart.get(counter).getColor() + ", " + shoesInCart.get(counter).getProductSize() + ", " + shoesInCart.get(counter).getModel().getPrice();
+            return myString;
+        }).toList();
+
+        myListOfOutput.forEach(e -> System.out.println(e));
+
+//        shoesInCart.forEach(shoe -> {
+//            System.out.println(counter + ": " + shoe.getModel().getName() + ", " + shoe.getColor() + ", " + shoe.getProductSize() + ", " + shoe.getModel().getPrice());
+//            counter.getAndIncrement();
+//        });
         System.out.println("____________________________________________");
         System.out.println("Totalt beställningsbelopp: " + sum);
 
@@ -152,10 +162,11 @@ public class CustomerController {
             if (input.equals("2")) {
                 removeFromCart();
             }
-        } catch (Exception e) {
-            System.out.println("Felaktig input, försök igen");
-            browseCartMenu();
+        } catch (Exception ex) {
+            System.out.println("Något gick fel!");
+            customerMainMenu();
         }
+
 
     }
 
