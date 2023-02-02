@@ -132,7 +132,6 @@ public class CustomerController {
     //TODO Nedanför är huvudmeny metoder
     private static void browseCartMenu() throws SQLException, IOException {
         browseCartMessage();
-//        AtomicInteger counter = new AtomicInteger(1);
         Double sum = shoesInCart.stream().map(e -> e.getModel().getPrice()).reduce(0.0, (subTotal, element) -> subTotal + element);
 
         System.out.println("KUNDVAGN \n");
