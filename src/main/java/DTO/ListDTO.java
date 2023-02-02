@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class ListDTO {
-
-
     private List<Brand> listOfBrands = new ArrayList<>();
     private List<Model> listOfModels = new ArrayList<>();
 

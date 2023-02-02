@@ -16,11 +16,7 @@ import java.util.stream.Collectors;
 
  // Använder sig av en Repository Singleton.
 
-
-//TODO: STÄDA UTSKRIFTERNA
-//TODO: Skriv till bekräftelse på att ett köp har genomförts
-
-public class Controller {
+public class CustomerController {
 
     private static final Scanner scan = new Scanner(System.in);
     static Service service;
@@ -51,7 +47,6 @@ public class Controller {
             }
         }
     }
-
 
     public static void customerMainMenu() throws SQLException, IOException {
         try {
@@ -91,7 +86,6 @@ public class Controller {
         }
     }
 
-
     //TODO nedanför är browseSizesMenu metoder
     public static void findShoeMenu() throws SQLException, IOException {
         while (true) {
@@ -113,17 +107,6 @@ public class Controller {
         }
     }
 
-    public static void findShoeMenuMessage() {
-        System.out.println("""
-                          
-                -- Skriv in ett modellnamn för att se färger och storlekar --
-                =============================================================         
-                |         Tryck 0 för att gå tillbaka till föregående meny  |
-                |         Tryck 1 för att lägga till vara i kundvagn        |
-                =============================================================   
-                 """);
-    }
-
     //TODO nedanför är productsMainMenu metoder
     private static void goBackToMainMenu() throws SQLException, IOException {
         customerMainMenu();
@@ -136,21 +119,6 @@ public class Controller {
 
     private static void printModelInformation(ListDTO listDTO) {
         listDTO.getListOfModels().forEach(object -> System.out.println("Modell: " + object.getName() + ", Märke: " + object.getBrand().getName() + ", Pris: " + object.getPrice()));
-    }
-
-    public static void productsMainMenuMessage() {
-        System.out.println("""
-                ===============================================================         
-                |         Tryck 0 för att återgå till huvudmenyn               |
-                |         Tryck 1 för att visa alla märken                     |
-                |         Tryck 2 för att visa alla modeller & priser          |
-                |         Tryck 3 för att söka efter specifik modell           |
-                |         Tryck 4 för att ...                                  |  
-                |         Tryck 5 för att ...                                  |  
-                |         Tryck 6 för att ...                                  |  
-                |         Tryck 9 för att visa det här meddelandet igen        |
-                ===============================================================   
-                 """);
     }
 
     //TODO Nedanför är huvudmeny metoder
@@ -167,20 +135,25 @@ public class Controller {
         System.out.println("____________________________________________");
         System.out.println("Totalt beställningsbelopp: " + sum);
 
-        String input = scan.nextLine();
-        if (input.equals("0")) { // Gå bak i meny
-            findShoeMenu();
-        }
-        if (input.equals("1")) { // Lägg beställning
-            processPayment(shoesInCart, currentCustomer);
-        }
-        if (input.equals("2")) {
-            removeFromCart();
+        try {
+            String input = scan.nextLine();
+            if (input.equals("0")) { // Gå bak i meny
+                customerMainMenu();
+            }
+            if (input.equals("1")) { // Lägg beställning
+                processPayment(shoesInCart, currentCustomer);
+            }
+            if (input.equals("2")) {
+                removeFromCart();
+            }
+        } catch (Exception e) {
+            System.out.println("Felaktig input, försök igen");
+            browseCartMenu();
         }
 
     }
 
-    private static void removeFromCart() {
+    private static void removeFromCart() throws SQLException, IOException {
         System.out.println("Ange skonamn, färg och storlek för att välja produkt att radera ur kundvagnen");
         String input = scan.nextLine();
 
@@ -205,6 +178,7 @@ public class Controller {
         if (deniedShoes.size() == 0) {
             if (service.processPayment(shoesInCart, currentCustomer)) {
                 shoesInCart.clear();
+                System.out.println("Köpet har genomförts!");
             }
         } else {
             deniedShoes.forEach(shoe -> {
@@ -213,7 +187,6 @@ public class Controller {
 
         }
     }
-
 
     private static void addToCartMenu() throws SQLException, IOException {
         while (true) {
@@ -252,8 +225,9 @@ public class Controller {
     }
 
     private static void browseCartMessage() {
-        System.out.println("""               
-                =============================================================         
+        System.out.println("""        
+                                           KUNDVAGN
+                =============================================================
                 |         Tryck 0 för att gå tillbaka till föregående meny  |
                 |         Tryck 1 för att lägga beställning                 |
                 |         Tryck 2 för att ta bort vara ur kundvagn          |
@@ -263,12 +237,14 @@ public class Controller {
 
     public static void addToCartMessage() {
         System.out.println("""
-                             
-                -- Skriv in modellnamn, färg och storlek för den sko du vill ha --
-                             --          Ex: Supernova, white, 36         --
-                   =============================================================         
-                   |         Tryck 0 för att gå tillbaka till föregående meny  |
-                   =============================================================   
+                                             LÄGG TILL I KUNDVAGN
+                   =====================================================================
+                   | -- Skriv in modellnamn, färg och storlek för den sko du vill ha    |
+                   | -- Ex: Supernova, white, 36                                        |
+                   |                                                                    |
+                   |                                                                    |
+                   |         Tryck 0 för att gå tillbaka till föregående meny           |
+                   =====================================================================   
                     """);
     }
 
@@ -289,11 +265,34 @@ public class Controller {
                 |         Tryck 1 för att visa alla skor                    |
                 |         Tryck 2 för att lägga till i kundvagn             |
                 |         Tryck 3 för att se kundvagn och lägga beställning |
-                |         Tryck 4 för att ...                               |  
-                |         Tryck 5 för att ...                               |  
-                |         Tryck 6 för att ...                               |  
                 |         Tryck 9 för att visa det här meddelandet igen     |
                 =============================================================   
+                 """);
+    }
+
+    public static void findShoeMenuMessage() {
+        System.out.println("""
+                                       PRODUKTER UNDERMENY
+                =============================================================
+                | -- Skriv in ett modellnamn för att se färger och storlekar|
+                | -- Ex: Supernova                                          |
+                |                                                           |
+                |         Tryck 0 för att gå tillbaka till föregående meny  |
+                |         Tryck 1 för att lägga till vara i kundvagn        |
+                =============================================================
+                 """);
+    }
+
+    public static void productsMainMenuMessage() {
+        System.out.println("""
+                                       PRODUKTER HUVUDMENY
+                ===============================================================         
+                |         Tryck 0 för att återgå till huvudmenyn               |
+                |         Tryck 1 för att visa alla märken                     |
+                |         Tryck 2 för att visa alla modeller & priser          |
+                |         Tryck 3 för att söka efter specifik modell           |
+                |         Tryck 9 för att visa det här meddelandet igen        |
+                ===============================================================   
                  """);
     }
 

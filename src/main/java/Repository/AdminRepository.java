@@ -27,7 +27,6 @@ public final class AdminRepository {
         return instance;
     }
 
-
     public List<Customer> getCustomerAndTransactionalData() {
 
         List<Customer> customerList = new ArrayList<>();

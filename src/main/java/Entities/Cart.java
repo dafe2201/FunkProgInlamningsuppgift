@@ -1,8 +1,5 @@
 package Entities;
 
-import java.util.List;
-import java.util.Set;
-
 public class Cart {
 
     protected int id;
@@ -31,7 +28,6 @@ public class Cart {
     public void setId(int id) {
         this.id = id;
     }
-
 
     @Override
     public String toString() {

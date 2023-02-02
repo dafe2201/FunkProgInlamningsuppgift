@@ -4,7 +4,7 @@ import DTO.ListDTO;
 import Entities.Customer;
 
 import Entities.Shoe;
-import Repository.Repository;
+import Repository.CustomerRepository;
 import Repository.AdminRepository;
 
 import java.io.IOException;
@@ -19,7 +19,8 @@ public class Service {
 
     }
 
-    public static void listCustomersByShoeColor(String input) throws IOException {
+    //Rapport 1 i VG:
+    public  void listCustomersByShoeColor(String input) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
         customerList.stream()
                 .filter(e -> e.getCustomerOrder().getCart().getShoe().getColor().equalsIgnoreCase(input))
@@ -30,7 +31,8 @@ public class Service {
                 });
     }
 
-    public static void listCustomersByShoeBrand(String input) throws IOException {
+    //rapport 1 i VG
+    public void listCustomersByShoeBrand(String input) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
         customerList.stream()
                 .filter(e -> e.getCustomerOrder().getCart().getShoe().getModel().getBrand().getName().equalsIgnoreCase(input))
@@ -41,7 +43,8 @@ public class Service {
                 });
     }
 
-    public static void listCustomersByShoeSize(String input) throws IOException {
+    //rapport 1 i VG
+    public void listCustomersByShoeSize(String input) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
         customerList.stream()
                 .filter(e -> e.getCustomerOrder().getCart().getShoe().getProductSize() == Integer.parseInt(input))
@@ -52,7 +55,8 @@ public class Service {
                 });
     }
 
-    public static void listCustomerOrderCount() throws IOException {
+    //Rapport 2 i VG
+    public void listCustomerOrderCount() throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
 
         Map<String, Long> numberOfCustomerOrders = customerList.stream().
@@ -65,39 +69,83 @@ public class Service {
         });
     }
 
+    //Rapport 3 i VG
+    public void listCustomerSpending() throws IOException {
+        List<Customer> customerList = adminGetAllCustomersFromDB();
 
-    public static List<Customer> adminGetAllCustomersFromDB() throws IOException {
+        Map<String, Double> customerSpending = customerList.stream()
+                .collect(Collectors.groupingBy(e -> e.getName(), Collectors.summingDouble(e -> e.getCustomerOrder().
+                        getCart().getShoe().getModel().getPrice())));
+
+        customerSpending.entrySet().stream().forEach(e -> {
+            System.out.println("Namn: " + e.getKey() + ", Summa av beställningar: " + e.getValue() + "\n");
+        });
+    }
+
+
+    //Rapport 4 i VG
+    public void getRevenueByCounty() throws IOException {
+
+        List<Customer> customerList = adminGetAllCustomersFromDB();
+
+        Map<String, Double> revenueByCounty = customerList.stream()
+                .collect(Collectors.groupingBy(e -> e.getCounty().getName(), Collectors.summingDouble(e -> e.getCustomerOrder()
+                        .getCart().getShoe().getModel().getPrice())));
+
+        revenueByCounty.entrySet().stream().forEach(e -> {
+            System.out.println("Ort: " + e.getKey() + ", Summa av beställningar: " + e.getValue() + "\n" );
+        });
+
+    }
+
+    //Rapport 5 i VG
+    public void getTopSellingProducts() throws IOException {
+        List <Customer> customerList = adminGetAllCustomersFromDB();
+
+        Map<String, Long> topSellers = customerList.stream()
+                .collect(Collectors.groupingBy(e -> e.getCustomerOrder().getCart().getShoe().getModel().getName(), Collectors.counting()));
+
+        topSellers.entrySet().stream().forEach(e -> {
+            System.out.println("Produkt: " + e.getKey() + ", Antal beställningar: " + e.getValue() + "\n");
+        });
+
+        Map<Long, List<String>> topSellersTwo = topSellers
+                .entrySet()
+                .stream()
+                .collect(Collectors.groupingBy(e -> e.getValue(), Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
+
+        System.out.println("Topp 5 köpta modeller: ");
+        topSellersTwo.entrySet().stream().sorted(Collections.reverseOrder(Comparator.comparing(Map.Entry::getKey))).limit(3).forEach(longListEntry -> {
+            System.out.println(
+                    "Antal beställningar: " + longListEntry.getKey() + ", av modell(er): " + longListEntry.getValue());
+        });
+    }
+
+    // Metod som kallar på AdminRepository för att hämta relevant data från DB
+    public  List<Customer> adminGetAllCustomersFromDB() throws IOException {
         List<Customer> listWithCustomerLists = AdminRepository.getInstance().getCustomerAndTransactionalData();
 
         return listWithCustomerLists;
     }
 
-    public static void listCustomerSpending() throws IOException {
-        List<Customer> customerList = adminGetAllCustomersFromDB();
-        //En rapport som listar alla kunder och hur mycket pengar varje kund, sammanlagt, har
-        //beställt för. Skriv ut varje kunds namn och summa.
-
-
-    }
-
 
     public Customer validateLogIn(String userName, String password) throws IOException, SQLException {
-        return Repository.getInstance().logInHandler(userName, password);
+        return CustomerRepository.getInstance().logInHandler(userName, password);
     }
 
     public ListDTO getShoesBrandModelPrice() throws IOException, SQLException {
-        return Repository.getInstance().getShoes();
+        return CustomerRepository.getInstance().getShoes();
     }
 
     public List<Shoe> getAllShoeInfo(String modellNamn) throws IOException, SQLException {
-        return Repository.getInstance().getShoeTransactionalData().stream().filter(shoe -> shoe.getModel().getName().equalsIgnoreCase(modellNamn)).toList();
+        return CustomerRepository.getInstance().getShoeTransactionalData().stream().filter(shoe -> shoe.getModel().getName().equalsIgnoreCase(modellNamn)).toList();
     }
 
     public List<Shoe> validateStockStatus(List<Shoe> shoeList) throws IOException {
 
         List<Shoe> shoesThatCannotBeBought = new ArrayList<>();
         for (int i = 0; i < shoeList.size(); i++) {
-            if (Repository.getInstance().validateStockStatus(shoeList.get(i).getModel().getName(), shoeList.get(i).getColor(), shoeList.get(i).getProductSize())) {
+            if (CustomerRepository.getInstance().validateStockStatus(shoeList.get(i).getModel().getName(), shoeList.get(i).getColor(), shoeList.get(i).getProductSize())) {
                 shoesThatCannotBeBought.add(shoeList.get(i));
             }
         }
@@ -105,56 +153,6 @@ public class Service {
     }
 
     public boolean processPayment(List<Shoe> shoesInCart, Customer currentCustomer) throws IOException, SQLException {
-        return Repository.getInstance().processPayment(shoesInCart, currentCustomer);
+        return CustomerRepository.getInstance().processPayment(shoesInCart, currentCustomer);
     }
 }
-
-
-//
-//    public static void adminFinalGetAllCustomersFromDB() throws IOException, SQLException {
-//
-//        List<List<Customer>> listWithCustomerLists = adminGetAllCustomersFromDB();
-//
-//        //        ObjectMapper objectMapper = new ObjectMapper();
-////        List<Shoe> listWithAllShoes = adminGetAllShoes();
-//
-//    Function<Shoe, Optional<Shoe>> shoeMapper = shoe ->  {
-//            for (int i=0; i<listWithAllShoes.size();i++) {
-//                if (shoe.getId() == listWithAllShoes.get(i).getId()) {
-//                    try {
-//                        Shoe deepShoeCopy = objectMapper
-//                                            .readValue(objectMapper.writeValueAsString(listWithAllShoes.get(i)), Shoe.class);
-//                        return Optional.of(deepShoeCopy);
-//                    } catch (JsonProcessingException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                }
-//            }
-//            return Optional.empty();
-//        };
-//
-//
-//        for (int i = 0; i < listWithCustomerLists.size(); i++) {
-//            List<Customer> mycustomerlist = listWithCustomerLists.get(i);
-//            for (int j = 0; j < mycustomerlist.size(); j++) {
-//
-//                Set<CustomerOrder> customerOrderSet = mycustomerlist.get(j).getCustomerOrderSet();
-//
-//                customerOrderSet.stream().map(CustomerOrder::getCart).peek(e-> {
-//                Optional<Shoe> maybeShoe = shoeMapper.apply(e.getShoe());
-//                    maybeShoe.ifPresent(e::setShoe);
-//                }).collect(Collectors.toList());
-//
-//            }
-//        }
-//
-//        listWithCustomerLists.forEach(e -> System.out.println(e));
-//        System.out.println("***************************");
-//        listWithAllShoes.forEach(e -> System.out.println(e));
-//
-//    }
-
-//    public static List<Shoe> adminGetAllShoes() throws IOException, SQLException {
-//        return Repository.getInstance().getShoeTransactionalData();
-//    }

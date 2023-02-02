@@ -1,6 +1,6 @@
 package Repository;
 
-import DTO.ListDTO;
+import  DTO.ListDTO;
 import Entities.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,7 +116,7 @@ public final class Repository {
                 p.getProperty("password"));
 
              PreparedStatement stmt = con.prepareStatement(
-                     "SELECT brand.id AS 'brand id', brand.name AS 'brand name',\n" +
+                             "SELECT brand.id AS 'brand id', brand.name AS 'brand name',\n" +
                              "category.id AS 'category id', category.name AS 'category name',\n" +
                              "model.id AS 'model id', model.name AS 'model name', model.price AS 'model price',\n" +
                              "stock.id AS 'shoe id', stock.productSize AS 'shoe size', stock.color AS 'shoe color', stock.amount AS 'shoe amount'\n" +

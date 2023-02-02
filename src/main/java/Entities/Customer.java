@@ -14,13 +14,10 @@ public class Customer {
     protected County county;
     protected boolean isAdmin;
     protected LocalDate DOB;
-    protected Set<CustomerOrder> customerOrderSet = new HashSet<>();
     protected CustomerOrder customerOrder;
 
 
-
     public Customer(){}
-
 
     public Customer(CustomerOrder customerOrder, int id, String name, String email, String password, County county, boolean isAdmin, LocalDate DOB) {
         this.customerOrder = customerOrder;
@@ -33,7 +30,6 @@ public class Customer {
         this.DOB = DOB;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,14 +41,6 @@ public class Customer {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public Set<CustomerOrder> getCustomerOrderSet() {
-        return customerOrderSet;
-    }
-
-    public void setCustomerOrderSet(Set<CustomerOrder> customerOrderSet) {
-        this.customerOrderSet = customerOrderSet;
     }
 
     public CustomerOrder getCustomerOrder() {
@@ -129,7 +117,6 @@ public class Customer {
                 ", county=" + county +
                 ", isAdmin=" + isAdmin +
                 ", DOB=" + DOB +
-                ", customerOrderSet=" + customerOrderSet +
                 ", customerOrder=" + customerOrder +
                 '}';
     }
