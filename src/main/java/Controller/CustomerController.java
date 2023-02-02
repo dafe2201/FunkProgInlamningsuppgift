@@ -144,10 +144,6 @@ public class CustomerController {
 
         myListOfOutput.forEach(e -> System.out.println(e));
 
-//        shoesInCart.forEach(shoe -> {
-//            System.out.println(counter + ": " + shoe.getModel().getName() + ", " + shoe.getColor() + ", " + shoe.getProductSize() + ", " + shoe.getModel().getPrice());
-//            counter.getAndIncrement();
-//        });
         System.out.println("____________________________________________");
         System.out.println("Totalt beställningsbelopp: " + sum);
 
