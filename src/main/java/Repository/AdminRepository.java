@@ -41,18 +41,19 @@ public final class AdminRepository {
 
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(
-                     "SELECT customer.id as CustomerID, customer.name as CustomerName, customer.email as CustomerEmail,\n" +
-                     "county.id as CountyID, county.name as CountyName, customerOrder.id as CustomerOrderID,\n" +
-                     "CustomerOrder.customerid as CustomerOrderCustomerID, cart.id as CartID, cart.customerOrderid as\n" +
-                     "CartCustomerOrderID, cart.stockid as CartStockID, model.id as ModelID, model.name as ModelName,\n" +
-                     "model.price as ModelPrice, brand.id as BrandID, brand.name as BrandName, stock.id as StockID,\n" +
-                     "stock.modelid as StockModelID, stock.productSize as StockProductSize, stock.color as StockColor from customer\n" +
-                     "inner join county on customer.countyID = county.id\n" +
-                     "inner join customerorder on customer.id = customerorder.customerID\n" +
-                     "inner join cart on cart.customerorderid = customerorder.id\n" +
-                     "inner join stock on cart.stockid = stock.id\n" +
-                     "inner join model on stock.modelID = model.id\n" +
-                     "inner join brand on model.brandID = brand.id\n"
+                     "SELECT customer.id AS 'CustomerID', customer.name AS 'CustomerName', customer.email AS 'CustomerEmail',\n" +
+                             "county.id AS 'CountyID', county.name AS 'CountyName', customerOrder.id AS 'CustomerOrderID',\n" +
+                             "customerOrder.customerID AS 'CustomerOrderCustomerID', cart.id AS 'CartID', cart.customerOrderID AS\n" +
+                             "'CartCustomerOrderID', cart.stockID AS 'CartStockID', model.id AS 'ModelID', model.name  AS 'ModelName',\n" +
+                             "model.price AS 'ModelPrice', brand.id AS 'BrandID', brand.name AS 'BrandName', stock.id AS 'StockID',\n" +
+                             "stock.modelID AS 'StockModelID', stock.productSize AS 'StockProductSize', stock.color AS 'StockColor' \n" +
+                             "FROM customer\n" +
+                             "INNER JOIN county ON customer.countyID = county.id\n" +
+                             "INNER JOIN customerOrder ON customer.id = customerOrder.customerID\n" +
+                             "INNER JOIN cart ON cart.customerOrderID = customerOrder.id\n" +
+                             "INNER JOIN stock ON cart.stockID = stock.id\n" +
+                             "INNER JOIN model ON stock.modelID = model.id \n" +
+                             "INNER JOIN brand on model.brandID = brand.id"
              )) {
 
             while (rs.next()) {
@@ -107,6 +108,7 @@ public final class AdminRepository {
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         return customerList;

@@ -1,9 +1,11 @@
 package Controller;
 
+import Entities.Customer;
+import FunctionalInterfaces.IListCustomersByShoeVaraibleNoGenerics;
+import FunctionalInterfaces.IListCustomersByShoeVariable;
 import Service.Service;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 
@@ -11,11 +13,16 @@ public class AdminController {
     static Scanner scan = new Scanner(System.in);
     Service service = new Service();
 
-    public AdminController() throws SQLException, IOException {
+    //variabel med funktionsdefinionen här
+    IListCustomersByShoeVaraibleNoGenerics shoeVariableColorSearchNoGenerics = (cust, input) -> cust.getCustomerOrder().getCart().getShoe().getColor().equalsIgnoreCase(input);
+    IListCustomersByShoeVariable<Customer, String, Boolean> shoeVariableBrandSearch = (cust, input) -> cust.getCustomerOrder().getCart().getShoe().getModel().getBrand().getName().equalsIgnoreCase(input);
+    IListCustomersByShoeVariable<Customer, String, Boolean> shoeVariableSizeSearch = (cust, input) -> cust.getCustomerOrder().getCart().getShoe().getProductSize() == Integer.parseInt(input);
+
+    public AdminController() {
 
     }
 
-    public void adminMenu() throws SQLException, IOException {
+    public void adminMenu()  {
         while (true) {
             adminMenuMessage();
             try {
@@ -31,6 +38,7 @@ public class AdminController {
 
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Felaktig input, försök igen");
                 adminMenuMessage();
             }
@@ -38,7 +46,7 @@ public class AdminController {
         }
     }
 
-    private void searchOrderHistoryByProduct() throws IOException, SQLException {
+    private void searchOrderHistoryByProduct() {
         while (true) {
             searchOrderHistoryByProductMessage();
             try {
@@ -48,18 +56,19 @@ public class AdminController {
 
                     case 1 ->  {
                         System.out.println("Ange en färg (engelska)");
-                        service.listCustomersByShoeColor(scan.nextLine());
+                        service.adminListCustomersByShoeColor(scan.nextLine(), shoeVariableColorSearchNoGenerics);
                     }
                     case 2 -> {
-                        System.out.println("Ange en modell");
-                        service.listCustomersByShoeBrand(scan.nextLine());
+                        System.out.println("Ange ett märke");
+                        service.adminListCustomersByShoeBrand(scan.nextLine(), shoeVariableBrandSearch);
                     }
                     case 3 -> {
                         System.out.println("Ange storlek");
-                        service.listCustomersByShoeSize(scan.nextLine());
+                        service.adminListCustomersByShoeSize(scan.nextLine(), shoeVariableSizeSearch);
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Felaktig input, försök igen");
                 searchOrderHistoryByProduct();
             }
@@ -68,19 +77,19 @@ public class AdminController {
 
 
     private void getTopSellingProducts() throws IOException {
-        service.getTopSellingProducts();
+        service.adminGetTopSellingProducts();
     }
 
     private void getRevenueByCounty() throws IOException {
-        service.getRevenueByCounty();
+        service.adminGetRevenueByCounty();
     }
 
     private void listCustomerSpending() throws IOException {
-        service.listCustomerSpending();
+        service.adminListCustomerSpending();
     }
 
     private void searchOrderHistoryByCustomer() throws IOException {
-        service.listCustomerOrderCount();
+        service.adminListCustomerOrderCount();
     }
 
 

@@ -64,6 +64,7 @@ public class CustomerController {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Felaktig input, välj en siffra!");
         }
 
@@ -84,12 +85,13 @@ public class CustomerController {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Felaktig input, välj en siffra!");
         }
     }
 
     //TODO nedanför är browseSizesMenu metoder
-    public static void findShoeMenu() throws SQLException, IOException {
+    public static void findShoeMenu() {
 
         try {
             while (true) {
@@ -110,6 +112,7 @@ public class CustomerController {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Felaktig input, försök igen");
             findShoeMenu();
         }
@@ -158,6 +161,7 @@ public class CustomerController {
                 removeFromCart();
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             System.out.println("Något gick fel!");
             customerMainMenu();
         }
@@ -184,6 +188,7 @@ public class CustomerController {
             shoesInCart.remove(shoesInCart.get(index));
             System.out.println("Tog bort skon");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Felaktig input, försök igen");
             browseCartMenu();
         }
@@ -205,9 +210,9 @@ public class CustomerController {
         }
     }
 
-    private static void addToCartMenu() throws SQLException, IOException {
-        while (true) {
+    private static void addToCartMenu()  {
 
+        while (true) {
             addToCartMessage();
             try {
                 String input = scan.nextLine();
@@ -227,6 +232,7 @@ public class CustomerController {
                     shoesInCart.add(currentShoe);
                 }
             } catch(Exception e) {
+                e.printStackTrace();
                 System.out.println("Felaktig input, försök igen");
                 addToCartMenu();
             }
@@ -240,6 +246,7 @@ public class CustomerController {
             List<Shoe> tempList = shoeList.stream().filter(shoe -> shoe.getColor().equals(color) && shoe.getProductSize() == Integer.parseInt(size)).collect(Collectors.toList());
             return tempList.get(0);
         } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
             System.out.println("Skon finns inte. Försök igen.");
         }
         return null;

@@ -4,6 +4,8 @@ import DTO.ListDTO;
 import Entities.Customer;
 
 import Entities.Shoe;
+import FunctionalInterfaces.IListCustomersByShoeVaraibleNoGenerics;
+import FunctionalInterfaces.IListCustomersByShoeVariable;
 import Repository.CustomerRepository;
 import Repository.AdminRepository;
 
@@ -15,15 +17,16 @@ import java.util.stream.Collectors;
 
 
 public class Service {
-    public Service() throws IOException, SQLException {
+    public Service() {
 
     }
 
-    //Rapport 1 i VG:
-    public  void listCustomersByShoeColor(String input) throws IOException {
+    //Rapport 1 i VG: (HÖGRE ORDNINGENS FUNKTION)
+    public  void adminListCustomersByShoeColor(String input, IListCustomersByShoeVaraibleNoGenerics function) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
+        System.out.println("Följande har köpt skor i färgen " + input);
         customerList.stream()
-                .filter(e -> e.getCustomerOrder().getCart().getShoe().getColor().equalsIgnoreCase(input))
+                .filter(customer -> function.searchWithoutGenerics(customer, input))
                 .distinct()
                 .forEach( customer -> {
                     System.out.println(customer.getName());
@@ -31,23 +34,25 @@ public class Service {
                 });
     }
 
-    //rapport 1 i VG
-    public void listCustomersByShoeBrand(String input) throws IOException {
+    //rapport 1 i VG: (HÖGRE ORDNINGENS FUNKTION)
+    public void adminListCustomersByShoeBrand(String input, IListCustomersByShoeVariable<Customer, String, Boolean> function) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
+        System.out.println("Följande har köpt skor av märket " + input);
         customerList.stream()
-                .filter(e -> e.getCustomerOrder().getCart().getShoe().getModel().getBrand().getName().equalsIgnoreCase(input))
-                .distinct()
-                .forEach( customer -> {
+                .filter(customer -> function.search(customer, input)) //Varför vill den konvertera till en boolean? (åtgärdat)
+                .distinct()                                           //Svar: Vi var tvungna att extenda returtypen till boolan,
+                .forEach( customer -> {                               //Java fattade inte annars att vi garanterade boolean och tvingade oss att casta om resultatet till boolean
                     System.out.println(customer.getName());
                     System.out.println(customer.getCounty().getName() +"\n");
                 });
     }
 
-    //rapport 1 i VG
-    public void listCustomersByShoeSize(String input) throws IOException {
+    //rapport 1 i VG: (HÖGRE ORDNINGENS FUNKTION)
+    public void adminListCustomersByShoeSize(String input, IListCustomersByShoeVariable<Customer, String, Boolean> function) throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
+        System.out.println("Följande har köpt skor i storleken " + input);
         customerList.stream()
-                .filter(e -> e.getCustomerOrder().getCart().getShoe().getProductSize() == Integer.parseInt(input))
+                .filter(customer -> function.search(customer, input))
                 .distinct()
                 .forEach( customer -> {
                     System.out.println(customer.getName());
@@ -56,7 +61,7 @@ public class Service {
     }
 
     //Rapport 2 i VG
-    public void listCustomerOrderCount() throws IOException {
+    public void adminListCustomerOrderCount() throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
 
         Map<String, Long> numberOfCustomerOrders = customerList.stream().
@@ -70,7 +75,7 @@ public class Service {
     }
 
     //Rapport 3 i VG
-    public void listCustomerSpending() throws IOException {
+    public void adminListCustomerSpending() throws IOException {
         List<Customer> customerList = adminGetAllCustomersFromDB();
 
         Map<String, Double> customerSpending = customerList.stream()
@@ -84,7 +89,7 @@ public class Service {
 
 
     //Rapport 4 i VG
-    public void getRevenueByCounty() throws IOException {
+    public void adminGetRevenueByCounty() throws IOException {
 
         List<Customer> customerList = adminGetAllCustomersFromDB();
 
@@ -99,25 +104,21 @@ public class Service {
     }
 
     //Rapport 5 i VG
-    public void getTopSellingProducts() throws IOException {
+    public void adminGetTopSellingProducts() throws IOException {
         List <Customer> customerList = adminGetAllCustomersFromDB();
 
         Map<String, Long> topSellers = customerList.stream()
                 .collect(Collectors.groupingBy(e -> e.getCustomerOrder().getCart().getShoe().getModel().getName(), Collectors.counting()));
-
-        topSellers.entrySet().stream().forEach(e -> {
-            System.out.println("Produkt: " + e.getKey() + ", Antal beställningar: " + e.getValue() + "\n");
-        });
 
         Map<Long, List<String>> topSellersTwo = topSellers
                 .entrySet()
                 .stream()
                 .collect(Collectors.groupingBy(e -> e.getValue(), Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
-        System.out.println("Topp 5 köpta modeller: ");
+        System.out.println("Topp 3 mest sålda skor: ");
         topSellersTwo.entrySet().stream().sorted(Collections.reverseOrder(Comparator.comparing(Map.Entry::getKey))).limit(3).forEach(longListEntry -> {
             System.out.println(
-                    "Antal beställningar: " + longListEntry.getKey() + ", av modell(er): " + longListEntry.getValue());
+                    "Sålda skor: " + longListEntry.getKey() + ", av modell(er): " + longListEntry.getValue());
         });
     }
 

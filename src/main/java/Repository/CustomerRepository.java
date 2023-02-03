@@ -184,6 +184,8 @@ public final class CustomerRepository {
         return finalShoeList;
     }
 
+    //Lagerstatus skall alltid vara färsk information från DB. Därav att vi anropar DB direkt för att validera lagerstatus
+    //Vi anser att det vidare är oförsvarsbart att dra in hela databasen igen för att kontrollera lagerstatus av en specifik sko.
     public boolean validateStockStatus(String modelName, String color, int size) {
         boolean productCantBeBought = true;
         try (Connection con = DriverManager.getConnection(
